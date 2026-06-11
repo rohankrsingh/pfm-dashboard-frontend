@@ -1,36 +1,74 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@theme {
+  /* ── Shadcn semantic tokens → Wise palette ── */
+  --color-background:           #e8ebe6;   /* canvas-soft: sage page bg */
+  --color-foreground:           #0e0f0c;   /* ink: primary text */
+  --color-card:                 #ffffff;   /* canvas: white card */
+  --color-card-foreground:      #0e0f0c;
+  --color-popover:              #ffffff;
+  --color-popover-foreground:   #0e0f0c;
+  --color-primary:              #9fe870;   /* Wise green CTA */
+  --color-primary-foreground:   #0e0f0c;   /* ink on green */
+  --color-secondary:            #e8ebe6;   /* canvas-soft */
+  --color-secondary-foreground: #0e0f0c;
+  --color-muted:                #e8ebe6;
+  --color-muted-foreground:     #454745;   /* body text */
+  --color-accent:               #c5edab;   /* primary-neutral */
+  --color-accent-foreground:    #0e0f0c;
+  --color-destructive:          #d03238;   /* negative red */
+  --color-border:               rgba(14,15,12,0.12);
+  --color-input:                #0e0f0c;   /* ink border on inputs */
+  --color-ring:                 #9fe870;   /* focus ring = wise green */
+
+  /* ── Full Wise palette as utilities (bg-wise-*, text-wise-*, etc.) ── */
+  --color-wise-green:           #9fe870;
+  --color-wise-green-hover:     #cdffad;
+  --color-wise-green-neutral:   #c5edab;
+  --color-wise-green-pale:      #e2f6d5;
+  --color-wise-ink:             #0e0f0c;
+  --color-wise-ink-deep:        #163300;
+  --color-wise-body:            #454745;
+  --color-wise-mute:            #868685;
+  --color-wise-canvas:          #ffffff;
+  --color-wise-canvas-soft:     #e8ebe6;
+  --color-wise-positive:        #2ead4b;
+  --color-wise-positive-deep:   #054d28;
+  --color-wise-warning:         #ffd11a;
+  --color-wise-warning-deep:    #b86700;
+  --color-wise-negative:        #d03238;
+  --color-wise-negative-bg:     #320707;
+  --color-wise-accent-orange:   #ffc091;
+  --color-wise-accent-cyan:     #38c8ff;
+
+  /* ── Border radius — Wise canonical: 24px xl ── */
+  --radius-sm:   0.5rem;    /* 8px  */
+  --radius-md:   0.75rem;   /* 12px */
+  --radius-lg:   1rem;      /* 16px */
+  --radius-xl:   1.5rem;    /* 24px — Wise canonical button + card */
+  --radius-2xl:  2rem;      /* 32px */
+  --radius-full: 9999px;
+
+  /* ── Typography ── */
+  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-heading: 'Inter', system-ui, sans-serif;
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f0f2f5;
-  color: #1a1f4e;
-  font-size: 13px;
-  line-height: 1.5;
-}
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
 
-button {
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-}
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+  }
 
-select {
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-}
+  * { border-color: var(--color-border); }
 
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.15);
-  border-radius: 4px;
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(14,15,12,0.15); border-radius: 9999px; }
 }
