@@ -1,0 +1,33 @@
+.main {
+  flex: 1;
+  padding: 28px 26px;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.midRow {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.botRow {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 1200px) {
+  .midRow,
+  .botRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .midRow,
+  .botRow {
+    grid-template-columns: 1fr;
+  }
+}
