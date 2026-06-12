@@ -72,3 +72,12 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(14,15,12,0.15); border-radius: 9999px; }
 }
+
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;          /* Chrome, Safari and Opera */
+}

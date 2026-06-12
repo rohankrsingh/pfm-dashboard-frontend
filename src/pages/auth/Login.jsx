@@ -11,8 +11,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
-import { ArrowRight, EnvelopeSimple, LockSimple, CheckCircle, ChartBar, ShieldCheck, ArrowsLeftRight } from '@phosphor-icons/react'
+import { ArrowRight, EnvelopeSimple, LockSimple } from '@phosphor-icons/react'
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
