@@ -23,6 +23,7 @@
   },
   "registries": {
     "@kokonutui": "https://kokonutui.com/r/{name}.json",
-    "@ss-blocks": "https://shadcnstudio.com/r/{style}/{name}.json"
+    "@ss-blocks": "https://shadcnstudio.com/r/{style}/{name}.json",
+    "@reui": "https://reui.io/r/{style}/{name}.json"
   }
 }
