@@ -1,16 +1,15 @@
-# React + Vite
+# PFM Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains both the frontend and backend components of the Personal Finance Manager (PFM) Dashboard application.
 
-Currently, two official plugins are available:
+## Repository Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **[/frontend](file:///home/rohan/Documents/pfm-dashboard-frontend/frontend)**: React + Vite + Recharts + Tailwind CSS/shadcn frontend application.
+- **[/backend](file:///home/rohan/Documents/pfm-dashboard-frontend/backend)**: Node.js + Express + MongoDB backend application.
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+To run the frontend or backend, navigate to their respective directories and follow their instructions.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Read [frontend/README.md](file:///home/rohan/Documents/pfm-dashboard-frontend/frontend/README.md) for frontend instructions.
+- Read [backend/README.md](file:///home/rohan/Documents/pfm-dashboard-frontend/backend/README.md) for backend instructions.

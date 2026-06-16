@@ -1,3 +1,18 @@
+# Dependencies
+**/node_modules/
+
+# Production builds
+frontend/dist/
+frontend/dist-ssr/
+backend/dist/
+backend/build/
+
+# Local env files
+backend/.env
+backend/.env.local
+backend/.env.*.local
+frontend/*.local
+
 # Logs
 logs
 *.log
@@ -7,18 +22,22 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# IDEs and OS files
+.vscode/
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+node_modules
+
+# Agent files
+.agents/
+skills-lock.json
+**/skills-lock.json
+skills.js
+**/skills.js
+DESIGN.md
+**/DESIGN.md
