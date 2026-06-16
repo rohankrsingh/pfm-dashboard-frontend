@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { api } from '@/lib/api'
 import {
   LayoutDashboard,
   Plus,
@@ -121,153 +122,16 @@ export default function Dashboard() {
   // ── PFM State ──
   // User Profile
   const [userProfile, setUserProfile] = useState({
-    name: 'Eleanor Vance',
-    email: 'eleanor.vance@example.com',
+    name: '',
+    email: '',
     currency: 'INR'
   })
 
   // Linked bank accounts
-  const [accounts, setAccounts] = useState([
-    {
-      id: '1',
-      platform: 'Chase Checking',
-      technologies: 'Checking & Savings',
-      earnings: '₹12,450.31',
-      rawBalance: 12450.31,
-      progressPercentage: 85,
-      img: 'https://cdn.shadcnstudio.com/ss-assets/blocks/dashboard-application/widgets/zipcar.png'
-    },
-    {
-      id: '2',
-      platform: 'Robinhood',
-      technologies: 'Brokerage & Stocks',
-      earnings: '₹24,850.50',
-      rawBalance: 24850.50,
-      progressPercentage: 65,
-      img: 'https://cdn.shadcnstudio.com/ss-assets/blocks/dashboard-application/widgets/bitbank.png'
-    },
-    {
-      id: '3',
-      platform: 'Cash Wallet',
-      technologies: 'Manual Ledger',
-      earnings: '₹1,234.00',
-      rawBalance: 1234.00,
-      progressPercentage: 45,
-      img: 'https://cdn.shadcnstudio.com/ss-assets/blocks/dashboard-application/widgets/zipcar.png'
-    }
-  ])
+  const [accounts, setAccounts] = useState([])
 
-  // Transactions ledger data (Enriched with type & date)
-  const [transactions, setTransactions] = useState([
-    {
-      id: '1',
-      avatar: '',
-      avatarFallback: 'JA',
-      name: 'Whole Foods Market',
-      email: 'Groceries',
-      amount: 124.50,
-      status: 'paid',
-      paidBy: 'visa',
-      type: 'debit',
-      date: 'Jun 15'
-    },
-    {
-      id: '2',
-      avatar: '',
-      avatarFallback: 'MG',
-      name: 'Uber Trip',
-      email: 'Transport',
-      amount: 24.30,
-      status: 'paid',
-      paidBy: 'mastercard',
-      type: 'debit',
-      date: 'Jun 14'
-    },
-    {
-      id: '3',
-      avatar: '',
-      avatarFallback: 'JD',
-      name: 'Netflix Subscription',
-      email: 'Entertainment',
-      amount: 15.99,
-      status: 'paid',
-      paidBy: 'visa',
-      type: 'debit',
-      date: 'Jun 13'
-    },
-    {
-      id: '4',
-      avatar: '',
-      avatarFallback: 'EC',
-      name: 'Monthly Salary (Wise Corp)',
-      email: 'Salary',
-      amount: 4500.00,
-      status: 'paid',
-      paidBy: 'bank',
-      type: 'credit',
-      date: 'Jun 12'
-    },
-    {
-      id: '5',
-      avatar: '',
-      avatarFallback: 'DL',
-      name: 'Stripe Investment Deposit',
-      email: 'Investments',
-      amount: 250.00,
-      status: 'pending',
-      paidBy: 'visa',
-      type: 'debit',
-      date: 'Jun 10'
-    },
-    {
-      id: '6',
-      avatar: '',
-      avatarFallback: 'SC',
-      name: 'Starbucks Coffee',
-      email: 'Entertainment',
-      amount: 6.80,
-      status: 'paid',
-      paidBy: 'mastercard',
-      type: 'debit',
-      date: 'Jun 09'
-    },
-    {
-      id: '7',
-      avatar: '',
-      avatarFallback: 'FW',
-      name: 'Freelance Design Project',
-      email: 'Freelance',
-      amount: 850.00,
-      status: 'paid',
-      paidBy: 'bank',
-      type: 'credit',
-      date: 'Jun 08'
-    },
-    {
-      id: '8',
-      avatar: '',
-      avatarFallback: 'AM',
-      name: 'Target Store',
-      email: 'Groceries',
-      amount: 89.20,
-      status: 'paid',
-      paidBy: 'visa',
-      type: 'debit',
-      date: 'Jun 06'
-    },
-    {
-      id: '9',
-      avatar: '',
-      avatarFallback: 'BP',
-      name: 'Shell Gas Station',
-      email: 'Transport',
-      amount: 45.00,
-      status: 'paid',
-      paidBy: 'visa',
-      type: 'debit',
-      date: 'Jun 05'
-    }
-  ])
+  // Transactions ledger data
+  const [transactions, setTransactions] = useState([])
 
   // Modals state
   const [isTxModalOpen, setIsTxModalOpen] = useState(false)
@@ -282,10 +146,102 @@ export default function Dashboard() {
   const [newTxAmount, setNewTxAmount] = useState('')
   const [newTxCategory, setNewTxCategory] = useState('Groceries')
   const [newTxPaidBy, setNewTxPaidBy] = useState('visa')
+  const [newTxAccountId, setNewTxAccountId] = useState('')
   const [linkBankName, setLinkBankName] = useState('Fidelity Investments')
   const [linkBankBalance, setLinkBankBalance] = useState('5000')
 
+  // Loading & error states
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const fetchDashboardData = async () => {
+    try {
+      setIsLoading(true)
+      setError('')
+
+      // 1. Fetch User Profile
+      const meData = await api.getMe()
+      setUserProfile({
+        name: meData.user.name,
+        email: meData.user.email,
+        currency: 'INR'
+      })
+
+      // 2. Fetch Accounts
+      const accsData = await api.getAccounts()
+      const mappedAccounts = accsData.accounts.map(acc => ({
+        id: acc._id,
+        platform: acc.name,
+        technologies: acc.type === 'checking' ? 'Checking Account' : 
+                      acc.type === 'savings' ? 'Savings Account' :
+                      acc.type === 'investment' ? 'Investment Portfolio' : 'Credit Card',
+        earnings: `₹${acc.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
+        rawBalance: acc.balance,
+        progressPercentage: 50,
+        img: acc.type === 'investment' 
+          ? 'https://cdn.shadcnstudio.com/ss-assets/blocks/dashboard-application/widgets/bitbank.png'
+          : 'https://cdn.shadcnstudio.com/ss-assets/blocks/dashboard-application/widgets/zipcar.png'
+      }))
+      setAccounts(mappedAccounts)
+      if (mappedAccounts.length > 0) {
+        setNewTxAccountId(mappedAccounts[0].id)
+      }
+
+      // 3. Fetch Dashboard Summary
+      const summaryData = await api.getDashboardSummary()
+      const txsData = summaryData.summary.recentTransactions || []
+      const mappedTransactions = txsData.map(tx => {
+        const initials = tx.description
+          .split(' ')
+          .map(w => w[0])
+          .join('')
+          .toUpperCase()
+          .substring(0, 2)
+
+        const catDisplay = tx.category === 'food' ? 'Groceries' :
+                           tx.category === 'transportation' ? 'Transport' :
+                           tx.category === 'entertainment' ? 'Entertainment' :
+                           tx.category === 'salary' ? 'Salary' :
+                           tx.category === 'other' ? 'Investments' : 'Freelance'
+
+        return {
+          id: tx._id,
+          avatar: '',
+          avatarFallback: initials || 'TX',
+          name: tx.description,
+          email: catDisplay, // UI uses 'email' field for category name
+          amount: tx.amount,
+          status: 'paid',
+          paidBy: 'bank',
+          type: tx.type === 'income' ? 'credit' : 'debit',
+          date: new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
+        }
+      })
+      setTransactions(mappedTransactions)
+
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err)
+      setError(err.message || 'Failed to load dashboard data')
+      if (err.message && err.message.toLowerCase().includes('authorized')) {
+        api.logout()
+        navigate('/login')
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      navigate('/login')
+      return
+    }
+    fetchDashboardData()
+  }, [])
+
   const handleLogout = () => {
+    api.logout()
     navigate('/')
   }
 
@@ -344,74 +300,76 @@ export default function Dashboard() {
   const activeStatus = statuses.find((s) => s.value === status) || statuses[0]
 
   // Handlers
-  const handleAddTransaction = (e) => {
+  const handleAddTransaction = async (e) => {
     e.preventDefault()
-    if (!newTxName || !newTxAmount) return
+    if (!newTxName || !newTxAmount || !newTxAccountId) {
+      alert("Please enter all details and select a linked bank account first.")
+      return
+    }
 
     const amountNum = parseFloat(newTxAmount)
     if (isNaN(amountNum)) return
 
-    const fallbackInitials = newTxName
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2)
+    try {
+      const catMap = {
+        'Groceries': 'food',
+        'Transport': 'transportation',
+        'Entertainment': 'entertainment',
+        'Investments': 'other'
+      }
+      const backendCategory = catMap[newTxCategory] || 'other'
 
-    const newTxItem = {
-      id: String(transactions.length + 1),
-      avatar: '',
-      avatarFallback: fallbackInitials || 'TX',
-      name: newTxName,
-      email: newTxCategory,
-      amount: amountNum,
-      status: 'paid',
-      paidBy: newTxPaidBy,
-      type: 'debit',
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
-    }
-
-    setTransactions([newTxItem, ...transactions])
-
-    setAccounts(prevAccounts => {
-      return prevAccounts.map(acc => {
-        if (newTxPaidBy === 'cash' && acc.platform === 'Cash Wallet') {
-          const nextBal = Math.max(0, acc.rawBalance - amountNum)
-          return { ...acc, rawBalance: nextBal, earnings: `₹${nextBal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` }
-        } else if (newTxPaidBy !== 'cash' && acc.platform === 'Chase Checking') {
-          const nextBal = Math.max(0, acc.rawBalance - amountNum)
-          return { ...acc, rawBalance: nextBal, earnings: `₹${nextBal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` }
-        }
-        return acc
+      await api.createTransaction({
+        description: newTxName,
+        amount: amountNum,
+        type: 'expense',
+        category: backendCategory,
+        accountId: newTxAccountId,
+        date: new Date()
       })
-    })
 
-    setNewTxName('')
-    setNewTxAmount('')
-    setNewTxCategory('Groceries')
-    setNewTxPaidBy('visa')
-    setIsTxModalOpen(false)
+      setNewTxName('')
+      setNewTxAmount('')
+      setNewTxCategory('Groceries')
+      setNewTxPaidBy('visa')
+      setIsTxModalOpen(false)
+
+      await fetchDashboardData()
+    } catch (err) {
+      alert(err.message || 'Failed to save transaction')
+    }
   }
 
-  const handleLinkBank = (e) => {
+  const handleLinkBank = async (e) => {
     e.preventDefault()
     const balanceNum = parseFloat(linkBankBalance)
     if (!linkBankName || isNaN(balanceNum)) return
 
-    const newAcc = {
-      id: String(accounts.length + 1),
-      platform: linkBankName,
-      technologies: 'Aggregated Account',
-      earnings: `₹${balanceNum.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
-      rawBalance: balanceNum,
-      progressPercentage: 50,
-      img: 'https://cdn.shadcnstudio.com/ss-assets/blocks/dashboard-application/widgets/bitbank.png'
-    }
+    try {
+      let type = 'checking'
+      if (linkBankName.includes('Fidelity') || linkBankName.includes('Coinbase')) {
+        type = 'investment'
+      }
+      
+      const colors = {
+        'Fidelity Investments': '#10B981',
+        'Bank of America': '#EF4444',
+        'Wells Fargo': '#F59E0B',
+        'Citibank Checking': '#3B82F6',
+        'Coinbase Crypto': '#6366F1'
+      }
+      const color = colors[linkBankName] || '#3B82F6'
 
-    setAccounts([...accounts, newAcc])
-    setIsLinkModalOpen(false)
-    setLinkBankName('Fidelity Investments')
-    setLinkBankBalance('5000')
+      await api.createAccount(linkBankName, type, balanceNum, color)
+
+      setIsLinkModalOpen(false)
+      setLinkBankName('Fidelity Investments')
+      setLinkBankBalance('5000')
+
+      await fetchDashboardData()
+    } catch (err) {
+      alert(err.message || 'Failed to link account')
+    }
   }
 
   // Custom Chart Tooltips
@@ -460,6 +418,29 @@ export default function Dashboard() {
       )
     }
     return null
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-wise-canvas-soft font-sans gap-4">
+        <div className="w-12 h-12 border-4 border-wise-ink border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-bold text-wise-ink uppercase tracking-wider animate-pulse">Loading dashboard...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-wise-canvas-soft font-sans gap-4 p-6 text-center">
+        <div className="p-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-semibold rounded-2xl max-w-md">
+          <p className="font-bold mb-1">Error Loading Dashboard</p>
+          <p className="text-xs leading-relaxed opacity-90">{error}</p>
+        </div>
+        <Button onClick={fetchDashboardData} className="bg-wise-ink text-white font-bold rounded-full px-6 py-2 cursor-pointer">
+          Try Again
+        </Button>
+      </div>
+    )
   }
 
   return (
@@ -1061,6 +1042,20 @@ export default function Dashboard() {
                   className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-wise-ink/15"
                   required
                 />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Account</label>
+                <Select value={newTxAccountId} onValueChange={setNewTxAccountId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map(acc => (
+                      <SelectItem key={acc.id} value={acc.id}>{acc.platform}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

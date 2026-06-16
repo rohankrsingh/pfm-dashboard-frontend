@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
 import { ArrowRight, EnvelopeSimple, LockSimple, User } from '@phosphor-icons/react'
+import { api } from '@/lib/api'
 
 const fields = [
   { id: 'name',     label: 'Full name',       type: 'text',     ph: 'John Doe',        icon: User },
@@ -33,18 +34,24 @@ const signUpSchema = z.object({
 export default function SignUp() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: { name: '', email: '', password: '', confirm: '' }
   })
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
+    setError('')
+    try {
+      await api.signup(data.name, data.email, data.password)
       navigate('/dashboard')
-    }, 800)
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -78,6 +85,11 @@ export default function SignUp() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <div className="p-3.5 bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold rounded-xl leading-relaxed">
+                {error}
+              </div>
+            )}
             <FieldGroup>
               {fields.map(({ id, label, type, ph, icon: Icon }) => (
                 <Field key={id} data-invalid={!!errors[id]}>

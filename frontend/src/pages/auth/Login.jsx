@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
 import { ArrowRight, EnvelopeSimple, LockSimple } from '@phosphor-icons/react'
+import { api } from '@/lib/api'
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -21,18 +22,24 @@ const loginSchema = z.object({
 export default function Login() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' }
   })
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
+    setError('')
+    try {
+      await api.login(data.email, data.password)
       navigate('/dashboard')
-    }, 800)
+    } catch (err) {
+      setError(err.message || 'Login failed. Please verify your credentials.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -66,6 +73,11 @@ export default function Login() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {error && (
+              <div className="p-3.5 bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold rounded-xl leading-relaxed">
+                {error}
+              </div>
+            )}
             <FieldGroup>
               <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email" className="text-sm font-semibold text-wise-ink">
