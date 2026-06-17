@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { api } from '@/lib/api'
 import {
@@ -475,10 +475,24 @@ export default function Dashboard() {
                 <SidebarMenu className="px-1.5 space-y-1">
                   <SidebarMenuItem>
                     <SidebarMenuButton
+                      asChild
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary text-wise-ink shadow-sm"
                     >
-                      <LayoutDashboard className="size-4 shrink-0" />
-                      <span>Dashboard Overview</span>
+                      <Link to="/dashboard">
+                        <LayoutDashboard className="size-4 shrink-0" />
+                        <span>Dashboard Overview</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
+                    >
+                      <Link to="/accounts">
+                        <BuildingIcon className="size-4 shrink-0" />
+                        <span>Linked Accounts</span>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -562,7 +576,8 @@ export default function Dashboard() {
                   
                   <DropdownMenuGroup>
                     <DropdownMenuItem
-                      onSelect={(e) => e.preventDefault()}
+                      onSelect={() => navigate('/accounts')}
+                      className="cursor-pointer"
                     >
                       <span className="flex items-center gap-2">
                         <BuildingIcon className="size-4" aria-hidden="true" />
