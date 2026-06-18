@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-import Home      from './pages/Home'
-import Login     from './pages/auth/Login'
-import SignUp    from './pages/auth/SignUp'
-import Dashboard from './pages/Dashboard'
-import Accounts  from './pages/Accounts'
+import Home            from './pages/Home'
+import Login           from './pages/auth/Login'
+import SignUp          from './pages/auth/SignUp'
+import DashboardLayout from './components/layout/DashboardLayout'
+import Dashboard       from './pages/Dashboard'
+import Accounts        from './pages/Accounts'
 
 export default function App() {
   return (
@@ -13,11 +14,12 @@ export default function App() {
         <Route path="/"          element={<Home />} />
         <Route path="/login"     element={<Login />} />
         <Route path="/signup"    element={<SignUp />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/accounts"  element={<Accounts />} />
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/accounts"  element={<Accounts />} />
+        </Route>
         <Route path="*"          element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   )
 }
-
