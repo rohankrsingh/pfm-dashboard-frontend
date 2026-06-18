@@ -475,24 +475,20 @@ export default function Dashboard() {
                 <SidebarMenu className="px-1.5 space-y-1">
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      asChild
+                      render={<Link to="/dashboard" />}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary text-wise-ink shadow-sm"
                     >
-                      <Link to="/dashboard">
-                        <LayoutDashboard className="size-4 shrink-0" />
-                        <span>Dashboard Overview</span>
-                      </Link>
+                      <LayoutDashboard className="size-4 shrink-0" />
+                      <span>Dashboard Overview</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      asChild
+                      render={<Link to="/accounts" />}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
                     >
-                      <Link to="/accounts">
-                        <BuildingIcon className="size-4 shrink-0" />
-                        <span>Linked Accounts</span>
-                      </Link>
+                      <BuildingIcon className="size-4 shrink-0" />
+                      <span>Linked Accounts</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -978,7 +974,7 @@ export default function Dashboard() {
                 
                 {/* Bar Chart View */}
                 <div className="w-full h-80 min-w-0">
-                  <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                  <ResponsiveContainer width="100%" height={320}>
                     <BarChart
                       data={monthlyHistoryData}
                       margin={{ top: 10, right: 10, left: -10, bottom: 0 }}

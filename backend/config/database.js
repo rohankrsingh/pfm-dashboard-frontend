@@ -11,9 +11,6 @@ export const connectDB = async () => {
 
   try {
     const conn = await mongoose.connect(uri, {
-      // Mongoose 6+ uses these by default but explicit options help clarity
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
     });
 

@@ -10,6 +10,7 @@ import {
   Edit2,
   Trash2,
   Check,
+  X,
   Loader2,
   ArrowUpRight,
   ArrowDownRight,
@@ -364,24 +365,20 @@ export default function Accounts() {
                 <SidebarMenu className="px-1.5 space-y-1">
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      asChild
+                      render={<Link to="/dashboard" />}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
                     >
-                      <Link to="/dashboard">
-                        <LayoutDashboard className="size-4 shrink-0" />
-                        <span>Dashboard Overview</span>
-                      </Link>
+                      <LayoutDashboard className="size-4 shrink-0" />
+                      <span>Dashboard Overview</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      asChild
+                      render={<Link to="/accounts" />}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary text-wise-ink shadow-sm"
                     >
-                      <Link to="/accounts">
-                        <BuildingIcon className="size-4 shrink-0" />
-                        <span>Linked Accounts</span>
-                      </Link>
+                      <BuildingIcon className="size-4 shrink-0" />
+                      <span>Linked Accounts</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -807,19 +804,22 @@ export default function Accounts() {
 
       {/* ── Plaid Link Flow Dialog Simulator ── */}
       {isPlaidModalOpen && (
-        <Dialog open={isPlaidModalOpen} onOpenChange={setIsPlaidModalOpen}>
-          <DialogContent className="sm:max-w-md bg-white rounded-[24px] border-none shadow-2xl p-6">
-            <DialogHeader className="pb-2">
-              <div className="flex items-center gap-2 text-wise-ink mb-1">
-                <span className="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center">
-                  <Lock className="size-3.5 text-white" />
-                </span>
-                <DialogTitle className="text-lg font-black tracking-tight">Plaid Link Sandbox</DialogTitle>
-              </div>
-              <DialogDescription className="text-xs text-wise-mute">
-                Connect your account using Plaid API secure link sandbox.
-              </DialogDescription>
-            </DialogHeader>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
+            <button 
+              onClick={() => setIsPlaidModalOpen(false)} 
+              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
+            >
+              <X className="size-5" />
+            </button>
+
+            <div className="flex items-center gap-2 mb-2 text-wise-ink">
+              <span className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0">
+                <Lock className="size-4 text-white" />
+              </span>
+              <h3 className="text-2xl font-black tracking-tight text-wise-ink">Plaid Link Sandbox</h3>
+            </div>
+            <p className="text-sm text-wise-body mb-6">Connect your account securely using Plaid API secure link sandbox.</p>
 
             {/* Step 1: Select Popular Bank */}
             {plaidStep === 1 && (
@@ -962,23 +962,26 @@ export default function Accounts() {
                 </Button>
               </div>
             )}
-          </DialogContent>
-        </Dialog>
+          </div>
+        </div>
       )}
 
       {/* ── Rename Dialog Modal ── */}
       {isRenameModalOpen && accountToRename && (
-        <Dialog open={isRenameModalOpen} onOpenChange={setIsRenameModalOpen}>
-          <DialogContent className="sm:max-w-md bg-white rounded-[24px] border-none shadow-2xl p-6">
-            <DialogHeader className="pb-2">
-              <DialogTitle className="text-lg font-black tracking-tight">Rename Account</DialogTitle>
-              <DialogDescription className="text-xs text-wise-mute">
-                Change the nickname of your connected account.
-              </DialogDescription>
-            </DialogHeader>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-md p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
+            <button 
+              onClick={() => setIsRenameModalOpen(false)} 
+              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
+            >
+              <X className="size-5" />
+            </button>
+            
+            <h3 className="text-2xl font-black text-wise-ink mb-2">Rename Account</h3>
+            <p className="text-sm text-wise-body mb-6">Change the nickname of your connected account.</p>
 
-            <form onSubmit={handleRenameSubmit} className="flex flex-col gap-4 py-2">
-              <div className="flex flex-col gap-1.5">
+            <form onSubmit={handleRenameSubmit} className="space-y-4">
+              <div className="space-y-2">
                 <label className="text-xs font-bold text-wise-ink">New Account Nickname</label>
                 <Input 
                   value={renameName}
@@ -989,7 +992,7 @@ export default function Accounts() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-2 mt-4">
                 <Button 
                   type="button"
                   variant="outline"
@@ -1006,29 +1009,32 @@ export default function Accounts() {
                 </Button>
               </div>
             </form>
-          </DialogContent>
-        </Dialog>
+          </div>
+        </div>
       )}
 
       {/* ── Disconnect Dialog Modal ── */}
       {isDeleteModalOpen && accountToDelete && (
-        <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-          <DialogContent className="sm:max-w-md bg-white rounded-[24px] border-none shadow-2xl p-6">
-            <DialogHeader className="pb-2">
-              <div className="flex items-center gap-2 text-destructive mb-1">
-                <ShieldAlert className="size-5" />
-                <DialogTitle className="text-lg font-black tracking-tight">Disconnect Account</DialogTitle>
-              </div>
-              <DialogDescription className="text-xs text-wise-mute">
-                This action is irreversible and will delete all associated transactions.
-              </DialogDescription>
-            </DialogHeader>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-md p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
+            <button 
+              onClick={() => setIsDeleteModalOpen(false)} 
+              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
+            >
+              <X className="size-5" />
+            </button>
+            
+            <div className="flex items-center gap-2 mb-2 text-destructive">
+              <ShieldAlert className="size-5" />
+              <h3 className="text-2xl font-black text-wise-ink">Disconnect Account</h3>
+            </div>
+            <p className="text-sm text-wise-mute mb-6">This action is irreversible and will delete all associated transactions.</p>
 
-            <div className="py-2 text-xs font-semibold text-wise-body leading-relaxed">
+            <div className="py-2 text-xs font-semibold text-wise-body leading-relaxed mb-6">
               Are you sure you want to disconnect <span className="font-bold text-wise-ink">{accountToDelete.name}</span>? All sync engines and balance monitoring for this institution will be disabled.
             </div>
 
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2">
               <Button 
                 type="button"
                 variant="outline"
@@ -1044,8 +1050,8 @@ export default function Accounts() {
                 Disconnect
               </Button>
             </div>
-          </DialogContent>
-        </Dialog>
+          </div>
+        </div>
       )}
     </div>
   )
