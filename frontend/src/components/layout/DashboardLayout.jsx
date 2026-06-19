@@ -4,6 +4,7 @@ import { api } from '@/lib/api'
 import {
   LayoutDashboard,
   BuildingIcon,
+  Receipt,
   ChevronsUpDownIcon,
   SunIcon,
   MoonIcon,
@@ -120,7 +121,11 @@ export default function DashboardLayout() {
   }
 
   const activeStatus = statuses.find((s) => s.value === status) || statuses[0]
-  const pageName = location.pathname.startsWith('/accounts') ? 'Accounts' : 'Dashboard'
+  const pageName = location.pathname.startsWith('/accounts')
+    ? 'Accounts'
+    : location.pathname.startsWith('/transactions')
+      ? 'Transactions'
+      : 'Dashboard'
 
   if (isLoading && accounts.length === 0) {
     return (
@@ -201,6 +206,20 @@ export default function DashboardLayout() {
                     >
                       <BuildingIcon className="size-4 shrink-0" />
                       <span>Linked Accounts</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      render={<Link to="/transactions" />}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
+                        location.pathname === "/transactions"
+                          ? "bg-primary text-wise-ink shadow-sm"
+                          : "hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
+                      )}
+                    >
+                      <Receipt className="size-4 shrink-0" />
+                      <span>Transactions</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>

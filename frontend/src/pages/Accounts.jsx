@@ -69,7 +69,7 @@ const POPULAR_BANKS = [
 ]
 
 export default function Accounts() {
-  const { accounts, fetchLayoutData } = useOutletContext()
+  const { userProfile, accounts, fetchLayoutData } = useOutletContext()
   
   // ── States ──
   // Sync all status
