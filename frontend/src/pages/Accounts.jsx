@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useOutletContext } from 'react-router-dom'
+import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import {
   BuildingIcon,
@@ -150,9 +151,10 @@ export default function Accounts() {
       try {
         await api.createAccount(newAccNickname, newAccType, balanceNum, selectedBank.color)
         setPlaidStep(4) // Connected Success state
+        toast.success(`${newAccNickname} linked successfully.`)
         await fetchLayoutData()
       } catch (err) {
-        alert(err.message || 'Failed to link account')
+        toast.error(err.message || 'Failed to link account')
         setPlaidStep(2)
       } finally {
         setIsLinkingSubmitting(false)
@@ -180,9 +182,10 @@ export default function Accounts() {
       })
       setIsRenameModalOpen(false)
       setAccountToRename(null)
+      toast.success('Account renamed successfully.')
       await fetchLayoutData()
     } catch (err) {
-      alert(err.message || 'Failed to rename account')
+      toast.error(err.message || 'Failed to rename account')
     }
   }
 
@@ -198,9 +201,10 @@ export default function Accounts() {
       await api.deleteAccount(accountToDelete._id)
       setIsDeleteModalOpen(false)
       setAccountToDelete(null)
+      toast.success('Account disconnected.')
       await fetchLayoutData()
     } catch (err) {
-      alert(err.message || 'Failed to disconnect account')
+      toast.error(err.message || 'Failed to disconnect account')
     }
   }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { format } from 'date-fns'
+import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import {
   Search,
@@ -218,9 +219,10 @@ export default function Transactions() {
       setAddDesc(''); setAddAmount(''); setAddNotes('')
       setAddCat('food'); setAddType('expense')
       setAddDate(new Date())
+      toast.success('Transaction saved successfully.')
       await Promise.all([fetchTransactions(), fetchLayoutData()])
     } catch (err) {
-      alert(err.message || 'Failed to save transaction')
+      toast.error(err.message || 'Failed to save transaction')
     } finally {
       setIsSaving(false)
     }
@@ -232,9 +234,10 @@ export default function Transactions() {
     try {
       await api.deleteTransaction(deleteTarget._id)
       setDeleteTarget(null)
+      toast.success('Transaction deleted — balance updated.')
       await Promise.all([fetchTransactions(), fetchLayoutData()])
     } catch (err) {
-      alert(err.message || 'Failed to delete transaction')
+      toast.error(err.message || 'Failed to delete transaction')
     } finally {
       setIsDeleting(false)
     }

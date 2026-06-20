@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useOutletContext, Link } from 'react-router-dom'
+import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import {
   Plus,
@@ -37,6 +38,7 @@ import { Badge } from '@/components/reui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Select,
   SelectContent,
@@ -153,7 +155,7 @@ export default function Dashboard() {
   const handleAddTransaction = async (e) => {
     e.preventDefault()
     if (!newTxName || !newTxAmount || !newTxAccountId) {
-      alert("Please enter all details and select a linked bank account first.")
+      toast.error('Please enter all details and select a linked account first.')
       return
     }
 
@@ -183,21 +185,24 @@ export default function Dashboard() {
       setNewTxCategory('Groceries')
       setNewTxPaidBy('visa')
       setIsTxModalOpen(false)
+      toast.success('Transaction recorded successfully.')
 
-      // Refresh layout data (for balances) and transactions summary
       await Promise.all([
         fetchLayoutData(),
         fetchDashboardSummary()
       ])
     } catch (err) {
-      alert(err.message || 'Failed to save transaction')
+      toast.error(err.message || 'Failed to save transaction')
     }
   }
 
   const handleLinkBank = async (e) => {
     e.preventDefault()
     const balanceNum = parseFloat(linkBankBalance)
-    if (!linkBankName || isNaN(balanceNum)) return
+    if (!linkBankName || isNaN(balanceNum)) {
+      toast.error('Please fill in all account details.')
+      return
+    }
 
     try {
       let type = 'checking'
@@ -219,11 +224,11 @@ export default function Dashboard() {
       setIsLinkModalOpen(false)
       setLinkBankName('Fidelity Investments')
       setLinkBankBalance('5000')
+      toast.success(`${linkBankName} linked successfully.`)
 
-      // Refresh global accounts list in layout
       await fetchLayoutData()
     } catch (err) {
-      alert(err.message || 'Failed to link account')
+      toast.error(err.message || 'Failed to link account')
     }
   }
 
@@ -346,7 +351,7 @@ export default function Dashboard() {
               onClick={() => setIsTxModalOpen(true)}
               className="bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
             >
-              <Plus className="size-4 shrink-0 animate-pulse" />
+              <Plus className="size-4 shrink-0" />
               Add Transaction
             </Button>
             <Button 
@@ -373,13 +378,9 @@ export default function Dashboard() {
               <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
                 ₹{totalBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </h3>
-              <div className="flex items-center gap-1 mt-1">
-                <div className={`flex items-center text-xs font-bold ${balanceTrend >= 0 ? 'text-wise-positive' : 'text-wise-negative'}`}>
-                  {balanceTrend >= 0 ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
-                  <span>{balanceTrend >= 0 ? '+' : ''}{balanceTrend.toFixed(1)}%</span>
-                </div>
-                <span className="text-xs text-wise-mute">vs last month</span>
-              </div>
+              <p className="text-xs text-wise-mute mt-1">
+                {mappedAccounts.length} linked account{mappedAccounts.length !== 1 ? 's' : ''}
+              </p>
             </div>
           </Card>
 
@@ -395,13 +396,9 @@ export default function Dashboard() {
               <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
                 ₹{totalSpending.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </h3>
-              <div className="flex items-center gap-1 mt-1">
-                <div className={`flex items-center text-xs font-bold ${spendingTrend <= 0 ? 'text-wise-positive' : 'text-wise-negative'}`}>
-                  {spendingTrend <= 0 ? <ArrowDownRight className="size-3.5" /> : <ArrowUpRight className="size-3.5" />}
-                  <span>{spendingTrend >= 0 ? '+' : ''}{spendingTrend.toFixed(1)}%</span>
-                </div>
-                <span className="text-xs text-wise-mute">vs last month</span>
-              </div>
+              <p className="text-xs text-wise-mute mt-1">
+                {debitTransactions.length} expense{debitTransactions.length !== 1 ? 's' : ''} this period
+              </p>
             </div>
           </Card>
 
@@ -417,13 +414,9 @@ export default function Dashboard() {
               <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
                 ₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </h3>
-              <div className="flex items-center gap-1 mt-1">
-                <div className={`flex items-center text-xs font-bold ${incomeTrend >= 0 ? 'text-wise-positive' : 'text-wise-negative'}`}>
-                  {incomeTrend >= 0 ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
-                  <span>{incomeTrend >= 0 ? '+' : ''}{incomeTrend.toFixed(1)}%</span>
-                </div>
-                <span className="text-xs text-wise-mute">vs last month</span>
-              </div>
+              <p className="text-xs text-wise-mute mt-1">
+                {creditTransactions.length} income record{creditTransactions.length !== 1 ? 's' : ''} this period
+              </p>
             </div>
           </Card>
 
@@ -436,16 +429,12 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
+              <h3 className={`text-3xl font-black tracking-tight font-sans ${savingsRate >= 0 ? 'text-wise-positive' : 'text-wise-negative'}`}>
                 {savingsRate.toFixed(1)}%
               </h3>
-              <div className="flex items-center gap-1 mt-1">
-                <div className={`flex items-center text-xs font-bold ${savingsRateTrend >= 0 ? 'text-wise-positive' : 'text-wise-negative'}`}>
-                  {savingsRateTrend >= 0 ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
-                  <span>{savingsRateTrend >= 0 ? '+' : ''}{savingsRateTrend.toFixed(1)}%</span>
-                </div>
-                <span className="text-xs text-wise-mute">vs last month</span>
-              </div>
+              <p className="text-xs text-wise-mute mt-1">
+                {savingsRate >= 20 ? 'On track — great work!' : savingsRate > 0 ? 'Room to improve' : 'No income recorded'}
+              </p>
             </div>
           </Card>
         </div>
@@ -573,9 +562,17 @@ export default function Dashboard() {
 
                 <div className="flex flex-col gap-2.5">
                   {isTxLoading ? (
-                    <div className="flex flex-col items-center justify-center py-10 gap-3 text-wise-mute">
-                      <div className="w-6 h-6 border-2 border-wise-ink border-t-transparent rounded-full animate-spin" />
-                      <span className="text-xs font-semibold">Updating ledger...</span>
+                    <div className="flex flex-col gap-3 py-2">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="flex items-center gap-3 px-2.5 py-2">
+                          <Skeleton className="size-11 rounded-full shrink-0" />
+                          <div className="flex-1 space-y-2">
+                            <Skeleton className="h-3 w-3/4 rounded-full" />
+                            <Skeleton className="h-2.5 w-1/2 rounded-full" />
+                          </div>
+                          <Skeleton className="h-4 w-16 rounded-full" />
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     transactions.slice(0, 8).map((tx) => {
@@ -702,6 +699,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
             <button 
               onClick={() => setIsTxModalOpen(false)} 
+              aria-label="Close modal"
               className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
@@ -811,13 +809,14 @@ export default function Dashboard() {
           <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
             <button 
               onClick={() => setIsLinkModalOpen(false)} 
+              aria-label="Close modal"
               className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
             
             <div className="flex items-center gap-2 mb-2 text-primary-foreground">
-              <Sparkles className="size-5 text-wise-ink animate-pulse" />
+              <Sparkles className="size-5 text-wise-ink" />
               <h3 className="text-2xl font-black text-wise-ink">Secure Plaid Sync</h3>
             </div>
             <p className="text-sm text-wise-body mb-6">Link your checking, savings, or brokerage accounts securely using end-to-end sandbox sync.</p>
