@@ -29,6 +29,7 @@ import {
 import { Button }   from '@/components/ui/button'
 import { Card }     from '@/components/ui/card'
 import { Input }    from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Badge }    from '@/components/reui/badge'
 import {
   Table,
@@ -460,9 +461,19 @@ export default function Transactions() {
         {/* Table card */}
         <Card className="rounded-[24px] border-none bg-white shadow-xs overflow-hidden">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-3">
-              <div className="w-8 h-8 border-[3px] border-wise-ink border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs font-semibold text-wise-mute">Loading ledger…</span>
+            <div className="divide-y divide-wise-ink/5">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 px-6 py-4">
+                  <Skeleton className="size-10 rounded-2xl shrink-0" />
+                  <div className="flex-1 space-y-2 min-w-0">
+                    <Skeleton className="h-3 w-2/5 rounded-full" />
+                    <Skeleton className="h-2.5 w-1/4 rounded-full" />
+                  </div>
+                  <Skeleton className="h-3 w-20 rounded-full hidden sm:block" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="size-6 rounded-full" />
+                </div>
+              ))}
             </div>
           ) : paginated.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3 text-center px-6">

@@ -80,6 +80,7 @@ export default function Dashboard() {
   // Form values
   const [newTxName, setNewTxName] = useState('')
   const [newTxAmount, setNewTxAmount] = useState('')
+  const [newTxType, setNewTxType] = useState('expense')
   const [newTxCategory, setNewTxCategory] = useState('Groceries')
   const [newTxPaidBy, setNewTxPaidBy] = useState('visa')
   const [newTxAccountId, setNewTxAccountId] = useState('')
@@ -174,7 +175,7 @@ export default function Dashboard() {
       await api.createTransaction({
         description: newTxName,
         amount: amountNum,
-        type: 'expense',
+        type: newTxType,
         category: backendCategory,
         accountId: newTxAccountId,
         date: new Date()
@@ -182,6 +183,7 @@ export default function Dashboard() {
 
       setNewTxName('')
       setNewTxAmount('')
+      setNewTxType('expense')
       setNewTxCategory('Groceries')
       setNewTxPaidBy('visa')
       setIsTxModalOpen(false)
@@ -366,77 +368,94 @@ export default function Dashboard() {
 
         {/* Top Bento Stats Grid: 4 Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card 1: Total Balance */}
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Total Balance</span>
-              <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
-                <Coins className="size-4" />
+          {isTxLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rounded-[24px] bg-white p-6 h-36 shadow-xs flex flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-2.5 w-24 rounded-full" />
+                  <Skeleton className="size-8 rounded-full" />
+                </div>
+                <div className="space-y-2 mt-auto">
+                  <Skeleton className="h-8 w-36 rounded-full" />
+                  <Skeleton className="h-2.5 w-24 rounded-full" />
+                </div>
               </div>
-            </div>
-            <div>
-              <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
-                ₹{totalBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </h3>
-              <p className="text-xs text-wise-mute mt-1">
-                {mappedAccounts.length} linked account{mappedAccounts.length !== 1 ? 's' : ''}
-              </p>
-            </div>
-          </Card>
+            ))
+          ) : (
+            <>
+              {/* Card 1: Total Balance */}
+              <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Total Balance</span>
+                  <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
+                    <Coins className="size-4" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
+                    ₹{totalBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </h3>
+                  <p className="text-xs text-wise-mute mt-1">
+                    {mappedAccounts.length} linked account{mappedAccounts.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              </Card>
 
-          {/* Card 2: Monthly Spending */}
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Monthly Spending</span>
-              <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
-                <ArrowDownRight className="size-4 text-wise-negative" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
-                ₹{totalSpending.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </h3>
-              <p className="text-xs text-wise-mute mt-1">
-                {debitTransactions.length} expense{debitTransactions.length !== 1 ? 's' : ''} this period
-              </p>
-            </div>
-          </Card>
+              {/* Card 2: Monthly Spending */}
+              <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Monthly Spending</span>
+                  <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
+                    <ArrowDownRight className="size-4 text-wise-negative" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
+                    ₹{totalSpending.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </h3>
+                  <p className="text-xs text-wise-mute mt-1">
+                    {debitTransactions.length} expense{debitTransactions.length !== 1 ? 's' : ''} this period
+                  </p>
+                </div>
+              </Card>
 
-          {/* Card 3: Monthly Income */}
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Monthly Income</span>
-              <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
-                <TrendingUp className="size-4 text-wise-positive" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
-                ₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </h3>
-              <p className="text-xs text-wise-mute mt-1">
-                {creditTransactions.length} income record{creditTransactions.length !== 1 ? 's' : ''} this period
-              </p>
-            </div>
-          </Card>
+              {/* Card 3: Monthly Income */}
+              <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Monthly Income</span>
+                  <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
+                    <TrendingUp className="size-4 text-wise-positive" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
+                    ₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </h3>
+                  <p className="text-xs text-wise-mute mt-1">
+                    {creditTransactions.length} income record{creditTransactions.length !== 1 ? 's' : ''} this period
+                  </p>
+                </div>
+              </Card>
 
-          {/* Card 4: Savings Rate */}
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Savings Rate</span>
-              <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
-                <Percent className="size-4" />
-              </div>
-            </div>
-            <div>
-              <h3 className={`text-3xl font-black tracking-tight font-sans ${savingsRate >= 0 ? 'text-wise-positive' : 'text-wise-negative'}`}>
-                {savingsRate.toFixed(1)}%
-              </h3>
-              <p className="text-xs text-wise-mute mt-1">
-                {savingsRate >= 20 ? 'On track — great work!' : savingsRate > 0 ? 'Room to improve' : 'No income recorded'}
-              </p>
-            </div>
-          </Card>
+              {/* Card 4: Savings Rate */}
+              <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Savings Rate</span>
+                  <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
+                    <Percent className="size-4" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className={`text-3xl font-black tracking-tight font-sans ${savingsRate >= 0 ? 'text-wise-positive' : 'text-wise-negative'}`}>
+                    {savingsRate.toFixed(1)}%
+                  </h3>
+                  <p className="text-xs text-wise-mute mt-1">
+                    {savingsRate >= 20 ? 'On track — great work!' : savingsRate > 0 ? 'Room to improve' : 'No income recorded'}
+                  </p>
+                </div>
+              </Card>
+            </>
+          )}
         </div>
 
         {/* Main Workspace Grid: 60/40 Split */}
@@ -652,8 +671,8 @@ export default function Dashboard() {
             </div>
             
             {/* Bar Chart View */}
-            <div className="w-full h-80 min-w-0">
-              <ResponsiveContainer width="100%" height={320}>
+            <div className="w-full min-h-[320px]" style={{ height: 320 }}>
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={monthlyHistoryData}
                   margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
@@ -709,10 +728,28 @@ export default function Dashboard() {
             <p className="text-sm text-wise-body mb-6">Record a cash or un-synced credit transaction manually.</p>
             
             <form onSubmit={handleAddTransaction} className="space-y-5">
+              {/* Type Toggle */}
+              <div className="flex rounded-2xl bg-wise-canvas-soft p-1 gap-1">
+                <button
+                  type="button"
+                  onClick={() => { setNewTxType('expense'); setNewTxCategory('Groceries') }}
+                  className={`flex-1 h-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${newTxType === 'expense' ? 'bg-white text-wise-negative shadow-xs' : 'text-wise-mute hover:text-wise-ink'}`}
+                >
+                  ↓ Expense
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setNewTxType('income'); setNewTxCategory('Salary') }}
+                  className={`flex-1 h-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${newTxType === 'income' ? 'bg-white text-wise-positive shadow-xs' : 'text-wise-mute hover:text-wise-ink'}`}
+                >
+                  ↑ Income
+                </button>
+              </div>
+
               <div className="space-y-2">
-                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Merchant Name</label>
+                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">{newTxType === 'income' ? 'Source / Description' : 'Merchant Name'}</label>
                 <Input 
-                  placeholder="e.g. Whole Foods, Gas Station" 
+                  placeholder={newTxType === 'income' ? 'e.g. Salary, Client Payment' : 'e.g. Whole Foods, Gas Station'} 
                   value={newTxName}
                   onChange={(e) => setNewTxName(e.target.value)}
                   className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-wise-ink/15"
@@ -755,10 +792,21 @@ export default function Dashboard() {
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Groceries">Groceries</SelectItem>
-                      <SelectItem value="Transport">Transport</SelectItem>
-                      <SelectItem value="Entertainment">Entertainment</SelectItem>
-                      <SelectItem value="Investments">Investments</SelectItem>
+                      {newTxType === 'expense' ? (
+                        <>
+                          <SelectItem value="Groceries">Groceries</SelectItem>
+                          <SelectItem value="Transport">Transport</SelectItem>
+                          <SelectItem value="Entertainment">Entertainment</SelectItem>
+                          <SelectItem value="Investments">Investments</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="Salary">Salary</SelectItem>
+                          <SelectItem value="Freelance">Freelance</SelectItem>
+                          <SelectItem value="Investments">Investments</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -793,9 +841,9 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-primary text-wise-ink hover:bg-wise-green-hover font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs"
+                  className={`font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs ${newTxType === 'income' ? 'bg-wise-positive text-white hover:bg-wise-positive-deep' : 'bg-primary text-wise-ink hover:bg-wise-green-hover'}`}
                 >
-                  Save Transaction
+                  {newTxType === 'income' ? 'Record Income' : 'Save Expense'}
                 </Button>
               </div>
             </form>
