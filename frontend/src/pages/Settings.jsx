@@ -1,0 +1,224 @@
+import { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
+import { toast } from 'sonner'
+import {
+  User,
+  Lock,
+  Globe,
+  ShieldAlert,
+  Save
+} from 'lucide-react'
+
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
+export default function Settings() {
+  const { userProfile } = useOutletContext()
+  
+  // Profile state
+  const [name, setName] = useState(userProfile?.name || '')
+  const [email, setEmail] = useState(userProfile?.email || '')
+  
+  // Security state
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+
+  // Preferences
+  const [currency, setCurrency] = useState('INR')
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault()
+    // Mock API call
+    toast.success("Profile updated successfully")
+  }
+
+  const handleUpdatePassword = (e) => {
+    e.preventDefault()
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match")
+      return
+    }
+    toast.success("Password updated successfully")
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
+  }
+
+  const handleSavePreferences = () => {
+    toast.success("Preferences saved")
+  }
+
+  const handleDeleteAccount = () => {
+    const confirm = window.confirm("Are you sure you want to delete your account? This action cannot be undone.")
+    if (confirm) {
+      toast.success("Account deletion request submitted")
+    }
+  }
+
+  return (
+    <main className="p-6 md:p-8 max-w-4xl w-full mx-auto animate-in fade-in duration-300">
+      <div className="mb-8">
+        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-wise-ink">
+          Settings
+        </h1>
+        <p className="text-xs text-wise-mute mt-1">
+          Manage your account settings and preferences.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-8">
+        
+        {/* Profile Section */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center">
+              <User className="size-4 text-wise-body" />
+            </div>
+            <h2 className="text-lg font-bold text-wise-ink">Profile</h2>
+          </div>
+          
+          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs">
+            <form onSubmit={handleSaveProfile} className="space-y-4 max-w-md">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-xs font-bold text-wise-mute uppercase tracking-wider">Full Name</Label>
+                <Input 
+                  id="name"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs font-bold text-wise-mute uppercase tracking-wider">Email Address</Label>
+                <Input 
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                />
+              </div>
+              <Button type="submit" className="bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer gap-2 transition-all">
+                <Save className="size-4" />
+                Save Profile
+              </Button>
+            </form>
+          </Card>
+        </section>
+
+        {/* Security Section */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center">
+              <Lock className="size-4 text-wise-body" />
+            </div>
+            <h2 className="text-lg font-bold text-wise-ink">Security</h2>
+          </div>
+          
+          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs">
+            <form onSubmit={handleUpdatePassword} className="space-y-4 max-w-md">
+              <div className="space-y-2">
+                <Label htmlFor="current-password" className="text-xs font-bold text-wise-mute uppercase tracking-wider">Current Password</Label>
+                <Input 
+                  id="current-password"
+                  type="password"
+                  value={currentPassword}
+                  onChange={e => setCurrentPassword(e.target.value)}
+                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-password" className="text-xs font-bold text-wise-mute uppercase tracking-wider">New Password</Label>
+                <Input 
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password" className="text-xs font-bold text-wise-mute uppercase tracking-wider">Confirm New Password</Label>
+                <Input 
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                />
+              </div>
+              <Button type="submit" className="bg-wise-canvas-soft text-wise-ink hover:bg-wise-ink/10 font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
+                Update Password
+              </Button>
+            </form>
+          </Card>
+        </section>
+
+        {/* Preferences Section */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center">
+              <Globe className="size-4 text-wise-body" />
+            </div>
+            <h2 className="text-lg font-bold text-wise-ink">Preferences</h2>
+          </div>
+          
+          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs">
+            <div className="space-y-4 max-w-md">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-wise-mute uppercase tracking-wider">Display Currency</Label>
+                <Select value={currency} onValueChange={setCurrency}>
+                  <SelectTrigger className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft text-sm">
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="INR">Indian Rupee (₹)</SelectItem>
+                    <SelectItem value="USD">US Dollar ($)</SelectItem>
+                    <SelectItem value="EUR">Euro (€)</SelectItem>
+                    <SelectItem value="GBP">British Pound (£)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleSavePreferences} className="bg-wise-canvas-soft text-wise-ink hover:bg-wise-ink/10 font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
+                Save Preferences
+              </Button>
+            </div>
+          </Card>
+        </section>
+
+        {/* Danger Zone */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="size-8 rounded-full bg-red-50 flex items-center justify-center">
+              <ShieldAlert className="size-4 text-wise-negative" />
+            </div>
+            <h2 className="text-lg font-bold text-wise-negative">Danger Zone</h2>
+          </div>
+          
+          <Card className="rounded-[24px] border border-red-100 bg-white p-6 shadow-xs">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-bold text-wise-ink">Delete Account</h3>
+                <p className="text-xs text-wise-mute mt-1 max-w-sm">
+                  Permanently remove your account and all associated data. This action cannot be undone.
+                </p>
+              </div>
+              <Button 
+                onClick={handleDeleteAccount}
+                variant="destructive" 
+                className="bg-wise-negative hover:bg-wise-negative-bg text-white font-bold rounded-xl h-12 px-6 cursor-pointer whitespace-nowrap"
+              >
+                Delete Account
+              </Button>
+            </div>
+          </Card>
+        </section>
+        
+      </div>
+    </main>
+  )
+}

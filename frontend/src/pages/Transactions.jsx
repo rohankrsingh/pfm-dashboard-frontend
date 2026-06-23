@@ -23,7 +23,8 @@ import {
   Coins,
   MoreHorizontalIcon,
   CalendarIcon,
-  Receipt
+  Receipt,
+  ListFilter
 } from 'lucide-react'
 
 import { Button }   from '@/components/ui/button'
@@ -31,6 +32,7 @@ import { Card }     from '@/components/ui/card'
 import { Input }    from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge }    from '@/components/reui/badge'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   Table,
   TableBody,
@@ -315,18 +317,31 @@ export default function Transactions() {
 
         {/* Filter bar */}
         <Card className="rounded-[24px] border-none bg-white p-4 md:p-5 shadow-xs">
-          <div className="flex flex-col md:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-wise-mute size-4 pointer-events-none" />
-              <Input
-                placeholder="Search transactions…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-10 h-10 rounded-full border-wise-ink/10 text-sm bg-wise-canvas-soft focus:bg-white transition-colors"
-              />
-            </div>
-
-            <Select value={filterType} onValueChange={setFilterType}>
+          <Collapsible className="w-full">
+            <div className="flex flex-col md:flex-row gap-3 w-full">
+              <div className="relative flex-1">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-wise-mute size-4 pointer-events-none" />
+                <Input
+                  placeholder="Search transactions…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="pl-10 h-10 rounded-full border-wise-ink/10 text-sm bg-wise-canvas-soft focus:bg-white transition-colors"
+                />
+              </div>
+              <CollapsibleTrigger asChild className="md:hidden">
+                <Button variant="outline" className="h-10 rounded-full border-wise-ink/10 text-sm font-semibold gap-2 w-full flex justify-between px-4 cursor-pointer">
+                  <span className="flex items-center gap-2">
+                    <ListFilter className="size-4" /> Filters
+                  </span>
+                  {(filterType !== 'all' || filterCat !== 'all' || filterAcc !== 'all' || dateRange.from || dateRange.to) && (
+                    <Badge variant="secondary" size="sm" className="bg-wise-green-pale text-wise-ink">
+                      {(filterType !== 'all' ? 1 : 0) + (filterCat !== 'all' ? 1 : 0) + (filterAcc !== 'all' ? 1 : 0) + (dateRange.from || dateRange.to ? 1 : 0)}
+                    </Badge>
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="md:!block md:flex md:items-center gap-3 space-y-3 md:space-y-0 mt-3 md:mt-0">
+                <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger className="w-full md:w-36 h-10 rounded-full border-wise-ink/10 text-sm">
                 <SelectValue />
               </SelectTrigger>
@@ -419,7 +434,9 @@ export default function Transactions() {
                 )}
               </PopoverContent>
             </Popover>
-          </div>
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
 
           {/* Active filter chips */}
           {(filterType !== 'all' || filterCat !== 'all' || filterAcc !== 'all' || search || dateRange.from || dateRange.to) && (

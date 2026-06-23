@@ -347,7 +347,7 @@ export default function Accounts() {
 
                       {/* Dropdown Menu action */}
                       <DropdownMenu>
-                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" />}>
+                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" aria-label="Account actions" />}>
                           <MoreVertical className="size-4 text-wise-body" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
@@ -490,7 +490,7 @@ export default function Accounts() {
                             </div>
                             
                             <DropdownMenu>
-                              <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" />}>
+                              <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" aria-label="Account actions" />}>
                                 <MoreVertical className="size-4 text-wise-body" />
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-48">
@@ -581,7 +581,7 @@ export default function Accounts() {
                       </div>
 
                       <DropdownMenu>
-                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" />}>
+                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" aria-label="Account actions" />}>
                           <MoreVertical className="size-4 text-wise-body" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">

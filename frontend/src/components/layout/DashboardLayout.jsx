@@ -125,7 +125,9 @@ export default function DashboardLayout() {
     ? 'Accounts'
     : location.pathname.startsWith('/transactions')
       ? 'Transactions'
-      : 'Dashboard'
+      : location.pathname.startsWith('/settings')
+        ? 'Settings'
+        : 'Dashboard'
 
   if (isLoading && accounts.length === 0) {
     return (
@@ -220,6 +222,20 @@ export default function DashboardLayout() {
                     >
                       <Receipt className="size-4 shrink-0" />
                       <span>Transactions</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      render={<Link to="/settings" />}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
+                        location.pathname === "/settings"
+                          ? "bg-primary text-wise-ink shadow-sm"
+                          : "hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
+                      )}
+                    >
+                      <SettingsIcon className="size-4 shrink-0" />
+                      <span>Settings</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -361,7 +377,10 @@ export default function DashboardLayout() {
                   <DropdownMenuSeparator className="bg-wise-ink/5" />
                   
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() => navigate('/settings')}
+                      className="cursor-pointer"
+                    >
                       <SettingsIcon className="size-4" aria-hidden="true" />
                       Settings
                     </DropdownMenuItem>

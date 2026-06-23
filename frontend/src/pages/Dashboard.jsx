@@ -631,7 +631,24 @@ export default function Dashboard() {
                     })
                   )}
                   {!isTxLoading && transactions.length === 0 && (
-                    <div className="text-center py-10 text-xs text-wise-mute">No recent transactions.</div>
+                    <div className="flex flex-col items-center justify-center text-center py-12 px-4 gap-3 animate-in fade-in duration-300">
+                      <div className="size-16 rounded-[24px] bg-wise-canvas-soft flex items-center justify-center mb-2">
+                        <Receipt className="size-8 text-wise-mute/50" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-bold text-wise-ink">No transactions yet</h4>
+                        <p className="text-xs text-wise-mute mt-1 max-w-[240px]">
+                          Your recent activity will appear here once you record an expense or income.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => setIsTxModalOpen(true)}
+                        className="bg-wise-canvas-soft text-wise-ink hover:bg-wise-ink/10 font-bold rounded-full h-10 px-5 mt-2 cursor-pointer gap-2 transition-all shadow-none"
+                      >
+                        <Plus className="size-3.5 shrink-0" />
+                        Add First Transaction
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
