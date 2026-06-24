@@ -97,15 +97,44 @@
 }
 
 .dark {
-  --destructive-foreground:           var(--color-red-600);
-  --success:           var(--color-emerald-500);
-  --success-foreground:           var(--color-emerald-600);
-  --info:           var(--color-violet-500);
-  --info-foreground:           var(--color-violet-600);
-  --warning:           var(--color-yellow-500);
-  --warning-foreground:           var(--color-yellow-600);
-  --invert:           var(--color-zinc-700);
-  --invert-foreground:           var(--color-zinc-50);
+  /* Shadcn semantic tokens → Wise dark palette */
+  --color-background:           #11130f;
+  --color-foreground:           #e8ebe6;
+  --color-card:                 #1a1d17;
+  --color-card-foreground:      #e8ebe6;
+  --color-popover:              #1a1d17;
+  --color-popover-foreground:   #e8ebe6;
+  --color-primary:              #9fe870;
+  --color-primary-foreground:   #0e0f0c;
+  --color-secondary:            #24291f;
+  --color-secondary-foreground: #e8ebe6;
+  --color-muted:                #24291f;
+  --color-muted-foreground:     #a0a29f;
+  --color-accent:               #2c3325;
+  --color-accent-foreground:    #e8ebe6;
+  --color-destructive:          #ff6b70;
+  --color-border:               rgba(232,235,230,0.12);
+  --color-input:                rgba(232,235,230,0.2);
+  --color-ring:                 #9fe870;
+
+  /* Full Wise palette as utilities dark overrides */
+  --color-wise-ink:             #ffffff;
+  --color-wise-ink-deep:        #f0f2ef;
+  --color-wise-body:            #b8bab6;
+  --color-wise-mute:            #a0a29f;
+  --color-wise-canvas:          #11130f;
+  --color-wise-canvas-soft:     #1a1d17;
+
+  /* Fallbacks */
+  --destructive-foreground:     var(--color-red-600);
+  --success:                    var(--color-emerald-500);
+  --success-foreground:         var(--color-emerald-600);
+  --info:                       var(--color-violet-500);
+  --info-foreground:            var(--color-violet-600);
+  --warning:                    var(--color-yellow-500);
+  --warning-foreground:         var(--color-yellow-600);
+  --invert:                     var(--color-zinc-700);
+  --invert-foreground:          var(--color-zinc-50);
 }
 
 @theme inline {
