@@ -8,6 +8,7 @@ import Dashboard       from './pages/Dashboard'
 import Accounts        from './pages/Accounts'
 import Transactions    from './pages/Transactions'
 import Settings        from './pages/Settings'
+import Budgets         from './pages/Budgets'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/dashboard"    element={<Dashboard />} />
           <Route path="/accounts"     element={<Accounts />} />
           <Route path="/transactions" element={<Transactions />} />
+          <Route path="/budgets"      element={<Budgets />} />
           <Route path="/settings"     element={<Settings />} />
         </Route>
         <Route path="*"          element={<Navigate to="/" replace />} />

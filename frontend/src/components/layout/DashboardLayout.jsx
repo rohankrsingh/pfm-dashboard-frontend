@@ -13,7 +13,8 @@ import {
   SettingsIcon,
   LifeBuoyIcon,
   LogOutIcon,
-  CheckIcon
+  CheckIcon,
+  Target
 } from 'lucide-react'
 
 import {
@@ -138,7 +139,9 @@ export default function DashboardLayout() {
     ? 'Accounts'
     : location.pathname.startsWith('/transactions')
       ? 'Transactions'
-      : location.pathname.startsWith('/settings')
+      : location.pathname.startsWith('/budgets')
+        ? 'Budgets & Goals'
+        : location.pathname.startsWith('/settings')
         ? 'Settings'
         : 'Dashboard'
 
