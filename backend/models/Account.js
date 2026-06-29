@@ -28,6 +28,20 @@ const accountSchema = new mongoose.Schema(
     color: {
       type: String,
       default: '#3B82F6'
+    },
+    plaidAccountId: {
+      type: String,
+      sparse: true,
+      unique: true
+    },
+    itemId: {
+      type: String
+    },
+    mask: {
+      type: String
+    },
+    subtype: {
+      type: String
     }
   },
   { timestamps: true }

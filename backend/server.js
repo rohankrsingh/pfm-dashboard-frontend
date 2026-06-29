@@ -22,12 +22,14 @@ import accountRoutes from './routes/accounts.js';
 import transactionRoutes from './routes/transactions.js';
 import dashboardRoutes from './routes/dashboard.js';
 import budgetRoutes from './routes/budgets.js';
+import plaidRoutes from './routes/plaid.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/budgets', budgetRoutes);
+app.use('/api/plaid', plaidRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

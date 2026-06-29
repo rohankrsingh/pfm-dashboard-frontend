@@ -28,14 +28,24 @@ const transactionSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['salary', 'food', 'utilities', 'transportation', 'entertainment', 'healthcare', 'shopping', 'other'],
       required: true
     },
     date: {
       type: Date,
       default: Date.now
     },
-    notes: String
+    notes: String,
+    plaidTransactionId: {
+      type: String,
+      sparse: true,
+      unique: true
+    },
+    itemId: String,
+    pending: {
+      type: Boolean,
+      default: false
+    },
+    merchantName: String
   },
   { timestamps: true }
 );
