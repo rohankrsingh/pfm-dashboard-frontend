@@ -254,14 +254,14 @@ export default function Transactions() {
         {/* Page header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-wise-ink">Transactions</h1>
-            <p className="text-xs text-wise-mute mt-0.5">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">Transactions</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">
               Full ledger — {allTransactions.length} records across all linked accounts
             </p>
           </div>
           <Button
             onClick={() => setIsAddOpen(true)}
-            className="bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-full h-12 px-6 gap-2 cursor-pointer shadow-xs"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full h-12 px-6 gap-2 cursor-pointer shadow-xs"
           >
             <Plus className="size-4 shrink-0" />
             Record Transaction
@@ -270,45 +270,45 @@ export default function Transactions() {
 
         {/* Summary cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col gap-2">
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Total Income</span>
-              <div className="size-8 rounded-full bg-wise-green-pale flex items-center justify-center">
-                <TrendingUp className="size-4 text-wise-positive" />
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Income</span>
+              <div className="size-8 rounded-full bg-primary/20 flex items-center justify-center">
+                <TrendingUp className="size-4 text-success" />
               </div>
             </div>
-            <span className="text-2xl font-black text-wise-ink tracking-tight">{formatAmount(totalIncome)}</span>
-            <span className="text-[10px] text-wise-mute font-semibold">
+            <span className="text-2xl font-black text-foreground tracking-tight">{formatAmount(totalIncome)}</span>
+            <span className="text-[10px] text-muted-foreground font-semibold">
               {allTransactions.filter(t => t.type === 'income').length} income records
             </span>
           </Card>
 
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col gap-2">
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Total Expenses</span>
-              <div className="size-8 rounded-full bg-red-50 flex items-center justify-center">
-                <TrendingDown className="size-4 text-wise-negative" />
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Expenses</span>
+              <div className="size-8 rounded-full bg-destructive/10 flex items-center justify-center">
+                <TrendingDown className="size-4 text-destructive" />
               </div>
             </div>
-            <span className="text-2xl font-black text-wise-ink tracking-tight">{formatAmount(totalExpense)}</span>
-            <span className="text-[10px] text-wise-mute font-semibold">
+            <span className="text-2xl font-black text-foreground tracking-tight">{formatAmount(totalExpense)}</span>
+            <span className="text-[10px] text-muted-foreground font-semibold">
               {allTransactions.filter(t => t.type === 'expense').length} expense records
             </span>
           </Card>
 
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col gap-2">
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Net Cash Flow</span>
-              <div className={cn("size-8 rounded-full flex items-center justify-center", netFlow >= 0 ? "bg-wise-green-pale" : "bg-red-50")}>
-                <Coins className={cn("size-4", netFlow >= 0 ? "text-wise-positive" : "text-wise-negative")} />
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Net Cash Flow</span>
+              <div className={cn("size-8 rounded-full flex items-center justify-center", netFlow >= 0 ? "bg-primary/20" : "bg-destructive/10")}>
+                <Coins className={cn("size-4", netFlow >= 0 ? "text-success" : "text-destructive")} />
               </div>
             </div>
-            <span className={cn("text-2xl font-black tracking-tight", netFlow >= 0 ? "text-wise-positive" : "text-wise-negative")}>
+            <span className={cn("text-2xl font-black tracking-tight", netFlow >= 0 ? "text-success" : "text-destructive")}>
               {netFlow >= 0 ? '+' : ''}{formatAmount(netFlow)}
             </span>
-            <div className="w-full bg-wise-canvas-soft rounded-full h-1.5 overflow-hidden mt-1">
+            <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden mt-1">
               <div
-                className={cn("h-full rounded-full transition-all duration-500", netFlow >= 0 ? "bg-wise-positive" : "bg-wise-negative")}
+                className={cn("h-full rounded-full transition-all duration-500", netFlow >= 0 ? "bg-success" : "bg-destructive")}
                 style={{ width: totalIncome > 0 ? `${Math.min(100, (Math.min(totalIncome, totalExpense) / Math.max(totalIncome, totalExpense)) * 100)}%` : '0%' }}
               />
             </div>
@@ -316,33 +316,31 @@ export default function Transactions() {
         </div>
 
         {/* Filter bar */}
-        <Card className="rounded-[24px] border-none bg-white p-4 md:p-5 shadow-xs">
+        <Card className="rounded-[24px] border-none bg-card p-4 md:p-5 shadow-xs">
           <Collapsible className="w-full">
             <div className="flex flex-col md:flex-row gap-3 w-full">
               <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-wise-mute size-4 pointer-events-none" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground size-4 pointer-events-none" />
                 <Input
                   placeholder="Search transactions…"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="pl-10 h-10 rounded-full border-wise-ink/10 text-sm bg-wise-canvas-soft focus:bg-white transition-colors"
+                  className="pl-10 h-10 rounded-full border-border text-sm bg-muted focus:bg-card transition-colors"
                 />
               </div>
-              <CollapsibleTrigger asChild className="md:hidden">
-                <Button variant="outline" className="h-10 rounded-full border-wise-ink/10 text-sm font-semibold gap-2 w-full flex justify-between px-4 cursor-pointer">
+              <CollapsibleTrigger className="md:hidden h-10 rounded-full border border-border text-sm font-semibold gap-2 w-full flex justify-between px-4 cursor-pointer items-center bg-background hover:bg-muted transition-colors">
                   <span className="flex items-center gap-2">
                     <ListFilter className="size-4" /> Filters
                   </span>
                   {(filterType !== 'all' || filterCat !== 'all' || filterAcc !== 'all' || dateRange.from || dateRange.to) && (
-                    <Badge variant="secondary" size="sm" className="bg-wise-green-pale text-wise-ink">
+                    <Badge variant="secondary" size="sm" className="bg-primary/20 text-foreground">
                       {(filterType !== 'all' ? 1 : 0) + (filterCat !== 'all' ? 1 : 0) + (filterAcc !== 'all' ? 1 : 0) + (dateRange.from || dateRange.to ? 1 : 0)}
                     </Badge>
                   )}
-                </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="md:!block md:flex md:items-center gap-3 space-y-3 md:space-y-0 mt-3 md:mt-0">
                 <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-full md:w-36 h-10 rounded-full border-wise-ink/10 text-sm">
+              <SelectTrigger className="w-full md:w-36 h-10 rounded-full border-border text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -351,7 +349,7 @@ export default function Transactions() {
             </Select>
 
             <Select value={filterCat} onValueChange={setFilterCat}>
-              <SelectTrigger className="w-full md:w-40 h-10 rounded-full border-wise-ink/10 text-sm">
+              <SelectTrigger className="w-full md:w-40 h-10 rounded-full border-border text-sm">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
@@ -361,7 +359,7 @@ export default function Transactions() {
             </Select>
 
             <Select value={filterAcc} onValueChange={setFilterAcc}>
-              <SelectTrigger className="w-full md:w-44 h-10 rounded-full border-wise-ink/10 text-sm">
+              <SelectTrigger className="w-full md:w-44 h-10 rounded-full border-border text-sm">
                 <SelectValue placeholder="All Accounts" />
               </SelectTrigger>
               <SelectContent>
@@ -371,7 +369,7 @@ export default function Transactions() {
             </Select>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-40 h-10 rounded-full border-wise-ink/10 text-sm">
+              <SelectTrigger className="w-full md:w-40 h-10 rounded-full border-border text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -386,8 +384,8 @@ export default function Transactions() {
                   <Button
                     variant="outline"
                     className={cn(
-                      'h-10 rounded-full border-wise-ink/10 text-sm font-semibold gap-2 px-4 justify-between min-w-[160px] cursor-pointer',
-                      (dateRange.from || dateRange.to) ? 'border-wise-green text-wise-ink bg-wise-green-pale/30' : 'text-wise-mute'
+                      'h-10 rounded-full border-border text-sm font-semibold gap-2 px-4 justify-between min-w-[160px] cursor-pointer',
+                      (dateRange.from || dateRange.to) ? 'border-primary text-foreground bg-primary/10' : 'text-muted-foreground'
                     )}
                   />
                 }
@@ -404,7 +402,7 @@ export default function Transactions() {
                   <span
                     role="button"
                     onClick={(e) => { e.stopPropagation(); setDateRange({ from: undefined, to: undefined }) }}
-                    className="ml-auto text-wise-mute hover:text-wise-ink cursor-pointer"
+                    className="ml-auto text-muted-foreground hover:text-foreground cursor-pointer"
                   >
                     <X className="size-3" />
                   </span>
@@ -421,11 +419,11 @@ export default function Transactions() {
                   initialFocus
                 />
                 {(dateRange.from || dateRange.to) && (
-                  <div className="p-3 pt-0 border-t border-wise-ink/5">
+                  <div className="p-3 pt-0 border-t border-border/50">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full text-xs font-bold rounded-full cursor-pointer text-wise-mute hover:text-wise-negative"
+                      className="w-full text-xs font-bold rounded-full cursor-pointer text-muted-foreground hover:text-destructive"
                       onClick={() => { setDateRange({ from: undefined, to: undefined }); setDatePickOpen(false) }}
                     >
                       Clear date range
@@ -440,30 +438,30 @@ export default function Transactions() {
 
           {/* Active filter chips */}
           {(filterType !== 'all' || filterCat !== 'all' || filterAcc !== 'all' || search || dateRange.from || dateRange.to) && (
-            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-wise-ink/5">
-              <span className="text-[10px] font-bold text-wise-mute uppercase tracking-wider self-center">Active:</span>
+            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/50">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider self-center">Active:</span>
               {search && (
-                <button onClick={() => setSearch('')} className="flex items-center gap-1 text-xs font-semibold bg-wise-canvas-soft px-2.5 py-1 rounded-full hover:bg-wise-ink/10 transition-colors cursor-pointer">
+                <button onClick={() => setSearch('')} className="flex items-center gap-1 text-xs font-semibold bg-muted px-2.5 py-1 rounded-full hover:bg-accent transition-colors cursor-pointer">
                   "{search}" <X className="size-3" />
                 </button>
               )}
               {filterType !== 'all' && (
-                <button onClick={() => setFilterType('all')} className="flex items-center gap-1 text-xs font-semibold bg-wise-canvas-soft px-2.5 py-1 rounded-full hover:bg-wise-ink/10 transition-colors capitalize cursor-pointer">
+                <button onClick={() => setFilterType('all')} className="flex items-center gap-1 text-xs font-semibold bg-muted px-2.5 py-1 rounded-full hover:bg-accent transition-colors capitalize cursor-pointer">
                   {filterType} <X className="size-3" />
                 </button>
               )}
               {filterCat !== 'all' && (
-                <button onClick={() => setFilterCat('all')} className="flex items-center gap-1 text-xs font-semibold bg-wise-canvas-soft px-2.5 py-1 rounded-full hover:bg-wise-ink/10 transition-colors cursor-pointer">
+                <button onClick={() => setFilterCat('all')} className="flex items-center gap-1 text-xs font-semibold bg-muted px-2.5 py-1 rounded-full hover:bg-accent transition-colors cursor-pointer">
                   {CATEGORY_META[filterCat]?.label || filterCat} <X className="size-3" />
                 </button>
               )}
               {filterAcc !== 'all' && (
-                <button onClick={() => setFilterAcc('all')} className="flex items-center gap-1 text-xs font-semibold bg-wise-canvas-soft px-2.5 py-1 rounded-full hover:bg-wise-ink/10 transition-colors cursor-pointer">
+                <button onClick={() => setFilterAcc('all')} className="flex items-center gap-1 text-xs font-semibold bg-muted px-2.5 py-1 rounded-full hover:bg-accent transition-colors cursor-pointer">
                   {accounts.find(a => a._id === filterAcc)?.name || 'Account'} <X className="size-3" />
                 </button>
               )}
               {(dateRange.from || dateRange.to) && (
-                <button onClick={() => setDateRange({ from: undefined, to: undefined })} className="flex items-center gap-1 text-xs font-semibold bg-wise-green-pale/40 text-wise-ink px-2.5 py-1 rounded-full hover:bg-wise-ink/10 transition-colors cursor-pointer">
+                <button onClick={() => setDateRange({ from: undefined, to: undefined })} className="flex items-center gap-1 text-xs font-semibold bg-primary/20 text-foreground px-2.5 py-1 rounded-full hover:bg-accent transition-colors cursor-pointer">
                   <CalendarIcon className="size-3" />
                   {dateRange.from && dateRange.to
                     ? `${format(dateRange.from, 'dd MMM')} – ${format(dateRange.to, 'dd MMM')}`
@@ -476,7 +474,7 @@ export default function Transactions() {
         </Card>
 
         {/* Table card */}
-        <Card className="rounded-[24px] border-none bg-white shadow-xs overflow-hidden">
+        <Card className="rounded-[24px] border-none bg-card shadow-xs overflow-hidden">
           {isLoading ? (
             <div className="divide-y divide-wise-ink/5">
               {Array.from({ length: 7 }).map((_, i) => (
@@ -494,12 +492,12 @@ export default function Transactions() {
             </div>
           ) : paginated.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3 text-center px-6">
-              <div className="size-14 rounded-2xl bg-wise-canvas-soft flex items-center justify-center">
-                <Wallet className="size-7 text-wise-mute opacity-50" />
+              <div className="size-14 rounded-2xl bg-muted flex items-center justify-center">
+                <Wallet className="size-7 text-muted-foreground opacity-50" />
               </div>
               <div>
-                <p className="text-sm font-bold text-wise-ink">No transactions found</p>
-                <p className="text-xs text-wise-mute mt-1 max-w-xs">
+                <p className="text-sm font-bold text-foreground">No transactions found</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-xs">
                   {allTransactions.length === 0
                     ? 'Record your first transaction to get started.'
                     : 'Try adjusting your search filters.'}
@@ -508,7 +506,7 @@ export default function Transactions() {
               {allTransactions.length === 0 && (
                 <Button
                   onClick={() => setIsAddOpen(true)}
-                  className="mt-2 bg-primary text-wise-ink font-bold h-10 px-5 rounded-full text-xs cursor-pointer hover:bg-wise-green-hover"
+                  className="mt-2 bg-primary text-foreground font-bold h-10 px-5 rounded-full text-xs cursor-pointer hover:bg-primary-hover"
                 >
                   <Plus className="size-3.5 mr-1.5" /> Add first transaction
                 </Button>
@@ -518,12 +516,12 @@ export default function Transactions() {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow className="border-wise-ink/5 bg-wise-canvas-soft/60 hover:bg-wise-canvas-soft/60">
-                    <TableHead className="pl-6 text-[10px] font-bold text-wise-mute uppercase tracking-wider h-11">Transaction</TableHead>
-                    <TableHead className="hidden sm:table-cell text-[10px] font-bold text-wise-mute uppercase tracking-wider h-11">Account</TableHead>
-                    <TableHead className="hidden md:table-cell text-[10px] font-bold text-wise-mute uppercase tracking-wider h-11">Category</TableHead>
-                    <TableHead className="text-[10px] font-bold text-wise-mute uppercase tracking-wider h-11">Date</TableHead>
-                    <TableHead className="text-right text-[10px] font-bold text-wise-mute uppercase tracking-wider h-11">Amount</TableHead>
+                  <TableRow className="border-border/50 bg-muted/60 hover:bg-muted/60">
+                    <TableHead className="pl-6 text-[10px] font-bold text-muted-foreground uppercase tracking-wider h-11">Transaction</TableHead>
+                    <TableHead className="hidden sm:table-cell text-[10px] font-bold text-muted-foreground uppercase tracking-wider h-11">Account</TableHead>
+                    <TableHead className="hidden md:table-cell text-[10px] font-bold text-muted-foreground uppercase tracking-wider h-11">Category</TableHead>
+                    <TableHead className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider h-11">Date</TableHead>
+                    <TableHead className="text-right text-[10px] font-bold text-muted-foreground uppercase tracking-wider h-11">Amount</TableHead>
                     <TableHead className="w-10 pr-4" />
                   </TableRow>
                 </TableHeader>
@@ -537,7 +535,7 @@ export default function Transactions() {
                     return (
                       <TableRow
                         key={tx._id}
-                        className="border-wise-ink/[0.04] hover:bg-wise-canvas-soft/40 transition-colors"
+                        className="border-border hover:bg-muted/40 transition-colors"
                       >
                         {/* Description */}
                         <TableCell className="pl-6 py-3.5">
@@ -549,11 +547,11 @@ export default function Transactions() {
                               <Icon className="size-4" />
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-bold text-wise-ink truncate max-w-[160px] md:max-w-none">
+                              <p className="text-sm font-bold text-foreground truncate max-w-[160px] md:max-w-none">
                                 {tx.description}
                               </p>
                               {tx.notes && (
-                                <p className="text-[10px] text-wise-mute truncate max-w-[120px] hidden sm:block">{tx.notes}</p>
+                                <p className="text-[10px] text-muted-foreground truncate max-w-[120px] hidden sm:block">{tx.notes}</p>
                               )}
                             </div>
                           </div>
@@ -561,7 +559,7 @@ export default function Transactions() {
 
                         {/* Account */}
                         <TableCell className="hidden sm:table-cell py-3.5">
-                          <span className="text-xs font-semibold text-wise-body truncate max-w-[110px] block">
+                          <span className="text-xs font-semibold text-muted-foreground truncate max-w-[110px] block">
                             {accName}
                           </span>
                         </TableCell>
@@ -580,7 +578,7 @@ export default function Transactions() {
 
                         {/* Date */}
                         <TableCell className="py-3.5">
-                          <span className="text-xs text-wise-mute font-semibold whitespace-nowrap">
+                          <span className="text-xs text-muted-foreground font-semibold whitespace-nowrap">
                             {relativeDate(tx.date)}
                           </span>
                         </TableCell>
@@ -589,7 +587,7 @@ export default function Transactions() {
                         <TableCell className="text-right py-3.5">
                           <span className={cn(
                             "text-sm font-black tabular-nums whitespace-nowrap",
-                            isIncome ? "text-wise-positive" : "text-wise-negative"
+                            isIncome ? "text-success" : "text-destructive"
                           )}>
                             {isIncome ? '+' : '−'}{formatAmount(tx.amount)}
                           </span>
@@ -603,7 +601,7 @@ export default function Transactions() {
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="size-8 rounded-full cursor-pointer text-wise-mute hover:text-wise-ink hover:bg-wise-canvas-soft"
+                                  className="size-8 rounded-full cursor-pointer text-muted-foreground hover:text-foreground hover:bg-muted"
                                 />
                               }
                             >
@@ -639,8 +637,8 @@ export default function Transactions() {
 
               {/* Pagination footer */}
               {filtered.length > PAGE_SIZE && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-wise-ink/5 bg-wise-canvas-soft/40">
-                  <span className="text-xs text-wise-mute font-semibold">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-border/50 bg-muted/40">
+                  <span className="text-xs text-muted-foreground font-semibold">
                     {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
                   </span>
                   <div className="flex items-center gap-1">
@@ -649,7 +647,7 @@ export default function Transactions() {
                       size="icon"
                       onClick={() => setPage(p => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="h-8 w-8 rounded-full cursor-pointer hover:bg-wise-canvas-soft disabled:opacity-30"
+                      className="h-8 w-8 rounded-full cursor-pointer hover:bg-muted disabled:opacity-30"
                     >
                       <ChevronLeft className="size-4" />
                     </Button>
@@ -662,7 +660,7 @@ export default function Transactions() {
                       }, [])
                       .map((item, idx) =>
                         item === '…' ? (
-                          <span key={`el-${idx}`} className="text-xs text-wise-mute px-1">…</span>
+                          <span key={`el-${idx}`} className="text-xs text-muted-foreground px-1">…</span>
                         ) : (
                           <Button
                             key={item}
@@ -672,8 +670,8 @@ export default function Transactions() {
                             className={cn(
                               "h-8 w-8 rounded-full text-xs font-bold cursor-pointer",
                               page === item
-                                ? "bg-wise-ink text-white hover:bg-wise-ink"
-                                : "hover:bg-wise-canvas-soft text-wise-body"
+                                ? "bg-primary text-white hover:bg-primary/90"
+                                : "hover:bg-muted text-muted-foreground"
                             )}
                           >
                             {item}
@@ -686,7 +684,7 @@ export default function Transactions() {
                       size="icon"
                       onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                       disabled={page === totalPages}
-                      className="h-8 w-8 rounded-full cursor-pointer hover:bg-wise-canvas-soft disabled:opacity-30"
+                      className="h-8 w-8 rounded-full cursor-pointer hover:bg-muted disabled:opacity-30"
                     >
                       <ChevronRight className="size-4" />
                     </Button>
@@ -702,44 +700,44 @@ export default function Transactions() {
       {/* ── Add Transaction Modal ── */}
       {isAddOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
+          <div className="bg-card rounded-3xl w-full max-w-lg p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
             <button
               onClick={() => setIsAddOpen(false)}
-              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
 
-            <h3 className="text-2xl font-black text-wise-ink mb-1">Record Transaction</h3>
-            <p className="text-sm text-wise-body mb-6">Log a manual transaction to your ledger.</p>
+            <h3 className="text-2xl font-black text-foreground mb-1">Record Transaction</h3>
+            <p className="text-sm text-muted-foreground mb-6">Log a manual transaction to your ledger.</p>
 
             <form onSubmit={handleAdd} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Description</label>
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Description</label>
                 <Input
                   placeholder="e.g. Swiggy order, petrol, salary credit"
                   value={addDesc}
                   onChange={e => setAddDesc(e.target.value)}
-                  className="rounded-2xl h-12 px-4 border-wise-ink/15 text-sm"
+                  className="rounded-2xl h-12 px-4 border-border text-sm"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Amount (₹)</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Amount (₹)</label>
                   <Input
                     type="number" step="0.01" min="0.01" placeholder="0.00"
                     value={addAmount}
                     onChange={e => setAddAmount(e.target.value)}
-                    className="rounded-2xl h-12 px-4 border-wise-ink/15 text-sm"
+                    className="rounded-2xl h-12 px-4 border-border text-sm"
                     required
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Type</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Type</label>
                   <Select value={addType} onValueChange={setAddType}>
-                    <SelectTrigger className="w-full h-12 rounded-2xl border-wise-ink/15">
+                    <SelectTrigger className="w-full h-12 rounded-2xl border-border">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -752,9 +750,9 @@ export default function Transactions() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Category</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Category</label>
                   <Select value={addCat} onValueChange={setAddCat}>
-                    <SelectTrigger className="w-full h-12 rounded-2xl border-wise-ink/15">
+                    <SelectTrigger className="w-full h-12 rounded-2xl border-border">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -763,9 +761,9 @@ export default function Transactions() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Account</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Account</label>
                   <Select value={addAccId} onValueChange={setAddAccId}>
-                    <SelectTrigger className="w-full h-12 rounded-2xl border-wise-ink/15">
+                    <SelectTrigger className="w-full h-12 rounded-2xl border-border">
                       <SelectValue placeholder="Select account" />
                     </SelectTrigger>
                     <SelectContent>
@@ -778,20 +776,20 @@ export default function Transactions() {
               <div className="grid grid-cols-2 gap-4">
                 {/* Date — Calendar Popover */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Date</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Date</label>
                   <Popover open={addDateOpen} onOpenChange={setAddDateOpen}>
                     <PopoverTrigger
                       render={
                         <Button
                           variant="outline"
-                          className="w-full h-12 rounded-2xl border-wise-ink/15 text-sm font-semibold justify-between px-4 cursor-pointer text-left"
+                          className="w-full h-12 rounded-2xl border-border text-sm font-semibold justify-between px-4 cursor-pointer text-left"
                         />
                       }
                     >
-                      <span className="text-wise-ink">
+                      <span className="text-foreground">
                         {addDate ? format(addDate, 'dd MMM yyyy') : 'Pick a date'}
                       </span>
-                      <CalendarIcon className="size-4 text-wise-mute shrink-0" />
+                      <CalendarIcon className="size-4 text-muted-foreground shrink-0" />
                     </PopoverTrigger>
                     <PopoverContent align="start" className="w-auto p-0">
                       <Calendar
@@ -806,12 +804,12 @@ export default function Transactions() {
                   </Popover>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Notes (optional)</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Notes (optional)</label>
                   <Input
                     placeholder="Reference, tag…"
                     value={addNotes}
                     onChange={e => setAddNotes(e.target.value)}
-                    className="rounded-2xl h-12 px-4 border-wise-ink/15 text-sm"
+                    className="rounded-2xl h-12 px-4 border-border text-sm"
                   />
                 </div>
               </div>
@@ -822,7 +820,7 @@ export default function Transactions() {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isSaving}
-                  className="bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-full h-12 px-7 text-sm cursor-pointer">
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full h-12 px-7 text-sm cursor-pointer">
                   {isSaving ? 'Saving…' : 'Save Transaction'}
                 </Button>
               </div>
@@ -834,15 +832,15 @@ export default function Transactions() {
       {/* ── Delete Confirm ── */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-sm p-8 shadow-xl border border-wise-ink/10 animate-in zoom-in-95 duration-150">
-            <div className="size-12 rounded-full bg-red-100 flex items-center justify-center text-wise-negative border border-red-200 mb-4">
+          <div className="bg-card rounded-3xl w-full max-w-sm p-8 shadow-xl border border-border animate-in zoom-in-95 duration-150">
+            <div className="size-12 rounded-full bg-red-100 flex items-center justify-center text-destructive border border-red-200 mb-4">
               <Trash2 className="size-5" />
             </div>
-            <h3 className="text-xl font-black text-wise-ink mb-1">Delete transaction?</h3>
-            <p className="text-xs text-wise-body mb-2 leading-relaxed font-semibold">
+            <h3 className="text-xl font-black text-foreground mb-1">Delete transaction?</h3>
+            <p className="text-xs text-muted-foreground mb-2 leading-relaxed font-semibold">
               {deleteTarget.description} — {formatAmount(deleteTarget.amount)}
             </p>
-            <p className="text-xs text-wise-mute mb-6 leading-relaxed">
+            <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
               This reverses the balance on the linked account and cannot be undone.
             </p>
             <div className="flex gap-3">
@@ -851,7 +849,7 @@ export default function Transactions() {
                 Cancel
               </Button>
               <Button onClick={handleDelete} disabled={isDeleting}
-                className="flex-1 bg-wise-negative text-white hover:bg-red-700 font-bold rounded-full h-11 text-xs cursor-pointer">
+                className="flex-1 bg-destructive text-white hover:bg-red-700 font-bold rounded-full h-11 text-xs cursor-pointer">
                 {isDeleting ? 'Deleting…' : 'Delete'}
               </Button>
             </div>

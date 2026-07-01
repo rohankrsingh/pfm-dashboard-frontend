@@ -29,7 +29,7 @@ export const FAQ = ({
   return (
     <section 
       className={cn(
-        "relative overflow-hidden bg-white px-6 py-20 text-wise-ink border-t border-wise-ink/5",
+        "relative overflow-hidden bg-card px-6 py-20 text-foreground border-t border-border/50",
         className
       )}
       {...props}
@@ -89,13 +89,13 @@ export const FAQ = ({
 
 const FAQHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
   <div className="relative z-10 flex flex-col items-center justify-center text-center">
-    <div className="inline-flex items-center gap-1.5 bg-wise-green-pale border border-wise-green-neutral/30 rounded-full px-3.5 py-1 mb-4">
-      <span className="w-1.5 h-1.5 rounded-full bg-wise-positive animate-pulse" />
-      <span className="text-[10px] font-bold text-wise-positive-deep uppercase tracking-wider">
+    <div className="inline-flex items-center gap-1.5 bg-primary/20 border border-primary-neutral/30 rounded-full px-3.5 py-1 mb-4">
+      <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+      <span className="text-[10px] font-bold text-success uppercase tracking-wider">
         {subtitle}
       </span>
     </div>
-    <h2 className="text-3xl md:text-5xl font-black text-wise-ink tracking-tight">
+    <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
       {title}
     </h2>
   </div>
@@ -116,10 +116,10 @@ const FAQTabs = ({
         key={key}
         onClick={() => setSelected(key)}
         className={cn(
-          "relative overflow-hidden whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 border border-wise-ink/5",
+          "relative overflow-hidden whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 border border-border/50",
           selected === key
-            ? "bg-wise-ink text-white"
-            : "bg-wise-canvas-soft/50 text-wise-body hover:bg-wise-canvas-soft hover:text-wise-ink"
+            ? "bg-primary text-white"
+            : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
         )}
       >
         <span className="relative z-10">{label}</span>
@@ -135,8 +135,8 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
     <motion.div
       animate={isOpen ? "open" : "closed"}
       className={cn(
-        "rounded-2xl border border-wise-ink/5 transition-all duration-300",
-        isOpen ? "bg-wise-green-pale/35 border-wise-green-neutral/40" : "bg-[#FAFBF9]/40 hover:bg-[#FAFBF9]/80"
+        "rounded-2xl border border-border/50 transition-all duration-300",
+        isOpen ? "bg-primary/20/35 border-primary-neutral/40" : "bg-[#FAFBF9]/40 hover:bg-[#FAFBF9]/80"
       )}
     >
       <button
@@ -146,7 +146,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
         <span
           className={cn(
             "text-base font-bold tracking-tight transition-colors",
-            isOpen ? "text-wise-ink" : "text-wise-body group-hover:text-wise-ink"
+            isOpen ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
           )}
         >
           {question}
@@ -162,7 +162,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
           <Plus
             className={cn(
               "h-4 w-4 transition-colors",
-              isOpen ? "text-wise-ink" : "text-wise-body group-hover:text-wise-ink"
+              isOpen ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
             )}
           />
         </motion.span>
@@ -176,7 +176,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
         transition={{ duration: 0.25, ease: "easeInOut" }}
         className="overflow-hidden px-5"
       >
-        <p className="text-sm text-wise-body leading-relaxed max-w-[95%]">{answer}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-[95%]">{answer}</p>
       </motion.div>
     </motion.div>
   );

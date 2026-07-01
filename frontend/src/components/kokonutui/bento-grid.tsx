@@ -162,8 +162,8 @@ const SpotlightFeature = ({ items }: { items: string[] }) => (
         key={`spotlight-${item.toLowerCase().replace(/\s+/g, "-")}`}
         transition={{ delay: 0.1 * index }}
       >
-        <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-wise-positive" />
-        <span className="text-wise-body text-sm font-semibold">
+        <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-success" />
+        <span className="text-muted-foreground text-sm font-semibold">
           {item}
         </span>
       </motion.li>
@@ -206,10 +206,10 @@ const CounterAnimation = ({
 
   return (
     <div className="flex items-baseline gap-1">
-      <span className="font-black text-3xl text-wise-ink">
+      <span className="font-black text-3xl text-foreground">
         {count.toFixed(1).replace(/\.0$/, "")}
       </span>
-      <span className="font-semibold text-wise-ink text-xl">
+      <span className="font-semibold text-foreground text-xl">
         {suffix}
       </span>
     </div>
@@ -222,7 +222,7 @@ const TimelineFeature = ({
   timeline: Array<{ year: string; event: string }>;
 }) => (
   <div className="relative mt-3 text-left">
-    <div className="absolute top-0 bottom-0 left-[9px] w-[2px] bg-wise-ink/10" />
+    <div className="absolute top-0 bottom-0 left-[9px] w-[2px] bg-primary/10" />
     {timeline.map((item) => (
       <motion.div
         animate={{ opacity: 1, x: 0 }}
@@ -235,12 +235,12 @@ const TimelineFeature = ({
           delay: 0.1,
         }}
       >
-        <div className="z-10 mt-0.5 h-5 w-5 flex-shrink-0 rounded-full border-2 border-wise-ink/20 bg-wise-green-pale" />
+        <div className="z-10 mt-0.5 h-5 w-5 flex-shrink-0 rounded-full border-2 border-border bg-primary/20" />
         <div>
-          <div className="font-bold text-wise-ink text-sm">
+          <div className="font-bold text-foreground text-sm">
             {item.year}
           </div>
-          <div className="text-wise-body text-xs">
+          <div className="text-muted-foreground text-xs">
             {item.event}
           </div>
         </div>
@@ -252,23 +252,23 @@ const TimelineFeature = ({
 const EncryptionFeature = () => {
   return (
     <div className="mt-4 space-y-3">
-      <div className="rounded-2xl border border-wise-ink/5 bg-[#FAFBF9]/65 p-4 text-left">
+      <div className="rounded-2xl border border-border/50 bg-[#FAFBF9]/65 p-4 text-left">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] font-bold text-wise-body/60 uppercase tracking-wider">Password Hashing</span>
-          <span className="text-[10px] font-bold text-wise-negative bg-wise-negative/10 px-2 py-0.5 rounded-full">Secure</span>
+          <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider">Password Hashing</span>
+          <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Secure</span>
         </div>
-        <div className="font-mono text-[11px] text-wise-ink truncate bg-white rounded-lg p-2.5 border border-wise-ink/5">
+        <div className="font-mono text-[11px] text-foreground truncate bg-card rounded-lg p-2.5 border border-border/50">
           $2b$12$K8xJ7rM2e9...9zP1qW
         </div>
       </div>
-      <div className="rounded-2xl border border-wise-ink/5 bg-[#FAFBF9]/65 p-4 text-left">
+      <div className="rounded-2xl border border-border/50 bg-[#FAFBF9]/65 p-4 text-left">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] font-bold text-wise-body/60 uppercase tracking-wider">Access Token</span>
-          <span className="text-[10px] font-bold text-wise-positive bg-wise-green-pale px-2 py-0.5 rounded-full">JWT Signed</span>
+          <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider">Access Token</span>
+          <span className="text-[10px] font-bold text-success bg-primary/20 px-2 py-0.5 rounded-full">JWT Signed</span>
         </div>
-        <div className="font-mono text-[11px] text-wise-mute truncate bg-white rounded-lg p-2.5 border border-wise-ink/5 flex items-center justify-between">
-          <span className="text-wise-positive-deep font-semibold">bearer.token.sig</span>
-          <span className="text-[9px] font-bold text-wise-mute">Expires 15m</span>
+        <div className="font-mono text-[11px] text-muted-foreground truncate bg-card rounded-lg p-2.5 border border-border/50 flex items-center justify-between">
+          <span className="text-success font-semibold">bearer.token.sig</span>
+          <span className="text-[9px] font-bold text-muted-foreground">Expires 15m</span>
         </div>
       </div>
     </div>
@@ -287,11 +287,11 @@ const MetricsFeature = ({
 }) => {
   const getColorClass = (color = "emerald") => {
     const colors = {
-      emerald: "bg-wise-green",
-      blue: "bg-wise-accent-cyan",
-      violet: "bg-wise-ink",
-      amber: "bg-wise-warning",
-      rose: "bg-wise-negative",
+      emerald: "bg-emerald-500",
+      blue: "bg-cyan-500",
+      violet: "bg-violet-500",
+      amber: "bg-amber-500",
+      rose: "bg-rose-500",
     };
     return colors[color as keyof typeof colors] || colors.emerald;
   };
@@ -307,7 +307,7 @@ const MetricsFeature = ({
           transition={{ delay: 0.15 * index }}
         >
           <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-1.5 font-bold text-wise-body">
+            <div className="flex items-center gap-1.5 font-bold text-muted-foreground">
               {metric.label === "Uptime" && <Clock className="h-3.5 w-3.5" />}
               {metric.label === "Response time" && (
                 <Zap className="h-3.5 w-3.5" />
@@ -317,7 +317,7 @@ const MetricsFeature = ({
               )}
               {metric.label}
             </div>
-            <div className="font-bold text-wise-body">
+            <div className="font-bold text-muted-foreground">
               {metric.value}
               {metric.suffix || "%"}
             </div>
@@ -366,14 +366,14 @@ function ManualTransactionQuickAdder() {
     <div className="w-full mt-3 flex flex-col md:flex-row gap-4 text-left">
       <form
         onSubmit={handleAdd}
-        className="flex-1 flex flex-col gap-2 bg-[#F3F4F6] p-3 rounded-2xl border border-wise-ink/5"
+        className="flex-1 flex flex-col gap-2 bg-[#F3F4F6] p-3 rounded-2xl border border-border/50"
       >
         <input
           type="text"
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="bg-white border-none outline-none text-xs text-wise-ink placeholder:text-wise-mute px-3 py-2 rounded-xl text-left shadow-sm"
+          className="bg-card border-none outline-none text-xs text-foreground placeholder:text-muted-foreground px-3 py-2 rounded-xl text-left shadow-sm"
           required
         />
         <div className="grid grid-cols-2 gap-2">
@@ -383,13 +383,13 @@ function ManualTransactionQuickAdder() {
             placeholder="Amount ($)"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="bg-white border-none outline-none text-xs text-wise-ink placeholder:text-wise-mute px-3 py-2 rounded-xl text-left shadow-sm"
+            className="bg-card border-none outline-none text-xs text-foreground placeholder:text-muted-foreground px-3 py-2 rounded-xl text-left shadow-sm"
             required
           />
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="bg-white border-none outline-none text-xs text-wise-body px-3 py-2 rounded-xl text-left shadow-sm appearance-none cursor-pointer"
+            className="bg-card border-none outline-none text-xs text-muted-foreground px-3 py-2 rounded-xl text-left shadow-sm appearance-none cursor-pointer"
           >
             <option value="Food">Food</option>
             <option value="Housing">Housing</option>
@@ -399,7 +399,7 @@ function ManualTransactionQuickAdder() {
         </div>
         <button
           type="submit"
-          className="bg-wise-ink text-white text-xs font-bold py-2 rounded-xl hover:bg-wise-ink/90 active:scale-[0.97] transition-all cursor-pointer text-center shadow-sm"
+          className="bg-primary text-white text-xs font-bold py-2 rounded-xl hover:bg-primary/90/90 active:scale-[0.97] transition-all cursor-pointer text-center shadow-sm"
         >
           + Add Transaction
         </button>
@@ -408,15 +408,15 @@ function ManualTransactionQuickAdder() {
         {transactions.map((tx, i) => (
           <div
             key={i}
-            className="flex justify-between items-center text-xs bg-white border border-wise-ink/5 rounded-xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.01)]"
+            className="flex justify-between items-center text-xs bg-card border border-border/50 rounded-xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.01)]"
           >
             <div className="flex flex-col">
-              <span className="font-bold text-wise-ink">{tx.description}</span>
-              <span className="text-[9px] text-wise-mute uppercase tracking-wider font-semibold">
+              <span className="font-bold text-foreground">{tx.description}</span>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold">
                 {tx.category}
               </span>
             </div>
-            <span className="font-black text-wise-negative">
+            <span className="font-black text-destructive">
               -${tx.amount.toFixed(2)}
             </span>
           </div>
@@ -428,13 +428,13 @@ function ManualTransactionQuickAdder() {
 
 function BudgetLimitsProgress() {
   const budgets = [
-    { category: "Groceries", limit: 300, spent: 270, color: "bg-wise-warning" },
-    { category: "Dining Out", limit: 200, spent: 110, color: "bg-wise-green" },
+    { category: "Groceries", limit: 300, spent: 270, color: "bg-warning" },
+    { category: "Dining Out", limit: 200, spent: 110, color: "bg-primary" },
     {
       category: "Entertainment",
       limit: 150,
       spent: 145,
-      color: "bg-wise-negative animate-pulse",
+      color: "bg-destructive animate-pulse",
     },
   ];
 
@@ -447,17 +447,17 @@ function BudgetLimitsProgress() {
           return (
             <div key={i} className="space-y-1">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-wise-ink flex items-center gap-1.5">
+                <span className="font-bold text-foreground flex items-center gap-1.5">
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      isWarning ? "bg-wise-negative" : "bg-wise-green"
+                      isWarning ? "bg-destructive" : "bg-primary"
                     }`}
                   />
                   {b.category}
                 </span>
-                <span className="font-semibold text-wise-body">
+                <span className="font-semibold text-muted-foreground">
                   ${b.spent}{" "}
-                  <span className="text-wise-mute">/ ${b.limit}</span>
+                  <span className="text-muted-foreground">/ ${b.limit}</span>
                 </span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#f4f5f3]">
@@ -467,7 +467,7 @@ function BudgetLimitsProgress() {
                 />
               </div>
               {isWarning && (
-                <p className="text-[9px] font-bold text-wise-negative flex items-center gap-1 leading-none mt-1">
+                <p className="text-[9px] font-bold text-destructive flex items-center gap-1 leading-none mt-1">
                   ⚠️ Limit Warning: {b.category} is almost depleted!
                 </p>
               )}
@@ -521,7 +521,7 @@ const BentoCard = ({ item }: { item: BentoItem }) => {
     >
       <Link
         aria-label={`${item.title} - ${item.description}`}
-        className="group relative flex h-full flex-col gap-4 rounded-3xl border border-wise-ink/5 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] transition-all duration-500 ease-out before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-b before:from-white/10 before:via-white/20 before:to-transparent before:opacity-100 before:transition-opacity before:duration-500 after:absolute after:inset-0 after:z-[-1] after:rounded-3xl after:bg-white hover:border-wise-ink/15 hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] hover:backdrop-blur-[6px]"
+        className="group relative flex h-full flex-col gap-4 rounded-3xl border border-border/50 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] transition-all duration-500 ease-out before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-b before:from-white/10 before:via-white/20 before:to-transparent before:opacity-100 before:transition-opacity before:duration-500 after:absolute after:inset-0 after:z-[-1] after:rounded-3xl after:bg-card hover:border-border hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] hover:backdrop-blur-[6px]"
         href={item.href || "#"}
         tabIndex={0}
       >
@@ -531,15 +531,15 @@ const BentoCard = ({ item }: { item: BentoItem }) => {
         >
           <div className="flex flex-1 flex-col space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="font-black text-wise-ink text-xl tracking-tight transition-colors duration-300 group-hover:text-wise-positive-deep">
+              <h3 className="font-black text-foreground text-xl tracking-tight transition-colors duration-300 group-hover:text-success">
                 {item.title}
               </h3>
-              <div className="text-wise-positive opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <div className="text-success opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <ArrowUpRight className="h-5 w-5" />
               </div>
             </div>
 
-            <p className="text-wise-body text-sm tracking-tight font-medium text-left">
+            <p className="text-muted-foreground text-sm tracking-tight font-medium text-left">
               {item.description}
             </p>
 
@@ -550,7 +550,7 @@ const BentoCard = ({ item }: { item: BentoItem }) => {
 
             {item.feature === "counter" && item.statistic && (
               <div className="mt-auto pt-3 text-left">
-                <span className="font-semibold text-wise-body text-xs block mb-1">
+                <span className="font-semibold text-muted-foreground text-xs block mb-1">
                   {item.statistic.label}
                 </span>
                 <CounterAnimation
@@ -581,20 +581,20 @@ const BentoCard = ({ item }: { item: BentoItem }) => {
 
 export default function BentoGrid() {
   return (
-    <section className="relative overflow-hidden bg-white py-20 border-t border-b border-wise-ink/5">
+    <section className="relative overflow-hidden bg-card py-20 border-t border-b border-border/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="max-w-3xl mx-auto mb-16 text-center">
-          <div className="inline-flex items-center gap-1.5 bg-wise-green-pale border border-wise-green-neutral/30 rounded-full px-3.5 py-1 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-wise-positive animate-pulse" />
-            <span className="text-[10px] font-bold text-wise-positive-deep uppercase tracking-wider">
+          <div className="inline-flex items-center gap-1.5 bg-primary/20 border border-primary-neutral/30 rounded-full px-3.5 py-1 mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+            <span className="text-[10px] font-bold text-success uppercase tracking-wider">
               Project Deliverables
             </span>
           </div>
-          <h2 className="text-3xl md:text-5xl font-black text-wise-ink tracking-tight mb-4">
+          <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mb-4">
             Engineered for Cash Flow Clarity
           </h2>
-          <p className="text-sm text-wise-body max-w-md mx-auto">
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
             A comprehensive overview of our functional personal finance dashboard, database architecture, and integration layers.
           </p>
         </div>
@@ -633,17 +633,17 @@ export default function BentoGrid() {
           {/* Row 3: Manual Ledger Control (spans 2) & Custom Category Budgets (spans 1) */}
           <div className="grid gap-6 md:grid-cols-3">
             <motion.div
-              className="overflow-hidden rounded-3xl border border-wise-ink/5 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] hover:border-wise-ink/15 hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] md:col-span-2 text-left"
+              className="overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] hover:border-border hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] md:col-span-2 text-left"
               variants={fadeInUp}
             >
               <div className="flex flex-col h-full justify-between gap-2">
                 <div>
                   <div className="mb-1 flex items-center justify-between">
-                    <h3 className="font-black text-wise-ink text-xl tracking-tight">
+                    <h3 className="font-black text-foreground text-xl tracking-tight">
                       Manual Ledger Controls
                     </h3>
                   </div>
-                  <p className="text-wise-body text-sm tracking-tight font-medium">
+                  <p className="text-muted-foreground text-sm tracking-tight font-medium">
                     Add custom manual transactions to override or complement bank-synced transactions. Type details below to update the demo ledger.
                   </p>
                 </div>
@@ -652,17 +652,17 @@ export default function BentoGrid() {
             </motion.div>
 
             <motion.div
-              className="overflow-hidden rounded-3xl border border-wise-ink/5 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] hover:border-wise-ink/15 hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] md:col-span-1 text-left"
+              className="overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] hover:border-border hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] md:col-span-1 text-left"
               variants={fadeInUp}
             >
               <div className="flex flex-col h-full justify-between gap-2">
                 <div>
                   <div className="mb-1 flex items-center justify-between">
-                    <h3 className="font-black text-wise-ink text-xl tracking-tight">
+                    <h3 className="font-black text-foreground text-xl tracking-tight">
                       Monthly Budget Limits
                     </h3>
                   </div>
-                  <p className="text-wise-body text-sm tracking-tight font-medium">
+                  <p className="text-muted-foreground text-sm tracking-tight font-medium">
                     Monitor budget consumption by category. The PFM tracks spent-to-limit ratios and raises warnings for over-limit risks.
                   </p>
                 </div>

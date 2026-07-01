@@ -1,19 +1,36 @@
+import './env.js'; // MUST be first — loads dotenv before any other module initializes
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import { connectDB } from './config/database.js';
 import { errorHandler } from './middleware/auth.js';
 
-// Load env vars
-dotenv.config();
-// Connect to database and start server
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl) or matching dev ports
+    if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
+
+// Request Logger
+app.use((req, res, next) => {
+  console.log(`[REQ] ${req.method} ${req.url}`);
+  next();
+});
+
 app.use(express.json());
 
 // Routes
@@ -46,25 +63,20 @@ const start = async () => {
     await connectDB();
     const server = app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
+      console.log(`Plaid Client ID loaded: ${process.env.PLAID_CLIENT_ID ? 'YES ✓' : 'NO ✗'}`);
+      console.log(`Plaid Secret loaded: ${process.env.PLAID_SECRET ? 'YES ✓' : 'NO ✗'}`);
     });
 
-    const gracefulShutdown = (signal) => {
-      console.log(`Received ${signal}. Closing server...`);
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('Received SIGTERM. Closing server...');
       server.close(() => {
         console.log('HTTP server closed.');
         process.exit(0);
       });
-      // Force close in 10s
-      setTimeout(() => {
-        console.error('Forcing server shutdown');
-        process.exit(1);
-      }, 10000).unref();
-    };
-
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    });
   } catch (err) {
-    console.error('Failed to start server:', err.message);
+    console.error('Failed to start server:', err);
     process.exit(1);
   }
 };

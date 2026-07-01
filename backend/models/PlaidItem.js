@@ -12,10 +12,20 @@ const plaidItemSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
+    // accessToken is stored ENCRYPTED — never store plaintext
     accessToken: {
       type: String,
       required: true
     },
+    institutionId: {
+      type: String,
+      default: null
+    },
+    institutionName: {
+      type: String,
+      default: null
+    },
+    // Cursor for incremental /transactions/sync
     transactionsCursor: {
       type: String,
       default: null
@@ -31,6 +41,11 @@ const plaidItemSchema = new mongoose.Schema(
     },
     errorMessage: {
       type: String,
+      default: null
+    },
+    // Track last successful sync
+    lastSyncedAt: {
+      type: Date,
       default: null
     }
   },

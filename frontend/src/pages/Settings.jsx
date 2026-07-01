@@ -62,10 +62,10 @@ export default function Settings() {
   return (
     <main className="p-6 md:p-8 max-w-4xl w-full mx-auto animate-in fade-in duration-300">
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-wise-ink">
+        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">
           Settings
         </h1>
-        <p className="text-xs text-wise-mute mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Manage your account settings and preferences.
         </p>
       </div>
@@ -75,34 +75,34 @@ export default function Settings() {
         {/* Profile Section */}
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center">
-              <User className="size-4 text-wise-body" />
+            <div className="size-8 rounded-full bg-muted flex items-center justify-center">
+              <User className="size-4 text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-bold text-wise-ink">Profile</h2>
+            <h2 className="text-lg font-bold text-foreground">Profile</h2>
           </div>
           
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs">
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs">
             <form onSubmit={handleSaveProfile} className="space-y-4 max-w-md">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-xs font-bold text-wise-mute uppercase tracking-wider">Full Name</Label>
+                <Label htmlFor="name" className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Full Name</Label>
                 <Input 
                   id="name"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                  className="h-12 rounded-xl border-border bg-muted focus:bg-card transition-colors"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs font-bold text-wise-mute uppercase tracking-wider">Email Address</Label>
+                <Label htmlFor="email" className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Email Address</Label>
                 <Input 
                   id="email"
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                  className="h-12 rounded-xl border-border bg-muted focus:bg-card transition-colors"
                 />
               </div>
-              <Button type="submit" className="bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer gap-2 transition-all">
+              <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer gap-2 transition-all">
                 <Save className="size-4" />
                 Save Profile
               </Button>
@@ -113,45 +113,45 @@ export default function Settings() {
         {/* Security Section */}
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center">
-              <Lock className="size-4 text-wise-body" />
+            <div className="size-8 rounded-full bg-muted flex items-center justify-center">
+              <Lock className="size-4 text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-bold text-wise-ink">Security</h2>
+            <h2 className="text-lg font-bold text-foreground">Security</h2>
           </div>
           
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs">
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs">
             <form onSubmit={handleUpdatePassword} className="space-y-4 max-w-md">
               <div className="space-y-2">
-                <Label htmlFor="current-password" className="text-xs font-bold text-wise-mute uppercase tracking-wider">Current Password</Label>
+                <Label htmlFor="current-password" className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Password</Label>
                 <Input 
                   id="current-password"
                   type="password"
                   value={currentPassword}
                   onChange={e => setCurrentPassword(e.target.value)}
-                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                  className="h-12 rounded-xl border-border bg-muted focus:bg-card transition-colors"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="new-password" className="text-xs font-bold text-wise-mute uppercase tracking-wider">New Password</Label>
+                <Label htmlFor="new-password" className="text-xs font-bold text-muted-foreground uppercase tracking-wider">New Password</Label>
                 <Input 
                   id="new-password"
                   type="password"
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
-                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                  className="h-12 rounded-xl border-border bg-muted focus:bg-card transition-colors"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password" className="text-xs font-bold text-wise-mute uppercase tracking-wider">Confirm New Password</Label>
+                <Label htmlFor="confirm-password" className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Confirm New Password</Label>
                 <Input 
                   id="confirm-password"
                   type="password"
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
-                  className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft focus:bg-white transition-colors"
+                  className="h-12 rounded-xl border-border bg-muted focus:bg-card transition-colors"
                 />
               </div>
-              <Button type="submit" className="bg-wise-canvas-soft text-wise-ink hover:bg-wise-ink/10 font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
+              <Button type="submit" className="bg-muted text-foreground hover:bg-accent font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
                 Update Password
               </Button>
             </form>
@@ -161,18 +161,18 @@ export default function Settings() {
         {/* Preferences Section */}
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center">
-              <Globe className="size-4 text-wise-body" />
+            <div className="size-8 rounded-full bg-muted flex items-center justify-center">
+              <Globe className="size-4 text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-bold text-wise-ink">Preferences</h2>
+            <h2 className="text-lg font-bold text-foreground">Preferences</h2>
           </div>
           
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs">
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs">
             <div className="space-y-4 max-w-md">
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-wise-mute uppercase tracking-wider">Display Currency</Label>
+                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Display Currency</Label>
                 <Select value={currency} onValueChange={setCurrency}>
-                  <SelectTrigger className="h-12 rounded-xl border-wise-ink/10 bg-wise-canvas-soft text-sm">
+                  <SelectTrigger className="h-12 rounded-xl border-border bg-muted text-sm">
                     <SelectValue placeholder="Select currency" />
                   </SelectTrigger>
                   <SelectContent>
@@ -183,7 +183,7 @@ export default function Settings() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleSavePreferences} className="bg-wise-canvas-soft text-wise-ink hover:bg-wise-ink/10 font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
+              <Button onClick={handleSavePreferences} className="bg-muted text-foreground hover:bg-accent font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
                 Save Preferences
               </Button>
             </div>
@@ -193,24 +193,24 @@ export default function Settings() {
         {/* Danger Zone */}
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <div className="size-8 rounded-full bg-red-50 flex items-center justify-center">
-              <ShieldAlert className="size-4 text-wise-negative" />
+            <div className="size-8 rounded-full bg-destructive/10 flex items-center justify-center">
+              <ShieldAlert className="size-4 text-destructive" />
             </div>
-            <h2 className="text-lg font-bold text-wise-negative">Danger Zone</h2>
+            <h2 className="text-lg font-bold text-destructive">Danger Zone</h2>
           </div>
           
-          <Card className="rounded-[24px] border border-red-100 bg-white p-6 shadow-xs">
+          <Card className="rounded-[24px] border border-destructive/20 bg-card p-6 shadow-xs">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h3 className="font-bold text-wise-ink">Delete Account</h3>
-                <p className="text-xs text-wise-mute mt-1 max-w-sm">
+                <h3 className="font-bold text-foreground">Delete Account</h3>
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
                   Permanently remove your account and all associated data. This action cannot be undone.
                 </p>
               </div>
               <Button 
                 onClick={handleDeleteAccount}
                 variant="destructive" 
-                className="bg-wise-negative hover:bg-wise-negative-bg text-white font-bold rounded-xl h-12 px-6 cursor-pointer whitespace-nowrap"
+                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold rounded-xl h-12 px-6 cursor-pointer whitespace-nowrap"
               >
                 Delete Account
               </Button>

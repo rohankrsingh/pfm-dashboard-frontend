@@ -23,6 +23,8 @@ import {
   ChevronRight
 } from 'lucide-react'
 
+import PlaidLinkButton from '@/components/plaid/PlaidLinkButton'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,17 +79,6 @@ export default function Accounts() {
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncMessage, setSyncMessage] = useState('')
 
-  // Modals state
-  const [isPlaidModalOpen, setIsPlaidModalOpen] = useState(false)
-  const [plaidStep, setPlaidStep] = useState(1) // 1: Select Bank, 2: Account details / link, 3: Verifying loader, 4: Connected success
-  const [selectedBank, setSelectedBank] = useState(null)
-  
-  // Form fields for Plaid Link
-  const [newAccNickname, setNewAccNickname] = useState('')
-  const [newAccType, setNewAccType] = useState('checking')
-  const [newAccBalance, setNewAccBalance] = useState('1500')
-  const [isLinkingSubmitting, setIsLinkingSubmitting] = useState(false)
-
   // Rename Account state
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false)
   const [accountToRename, setAccountToRename] = useState(null)
@@ -97,70 +88,26 @@ export default function Accounts() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [accountToDelete, setAccountToDelete] = useState(null)
 
-  // ── Sync All Simulation ──
+  // ── Sync All ──
   const handleSyncAll = async () => {
     setIsSyncing(true)
     setSyncMessage('Connecting to Plaid server...')
     
-    // Simulate step-by-step Plaid synchronization
-    setTimeout(() => {
+    try {
+      await api.syncTransactions()
       setSyncMessage('Fetching transactions ledger...')
-      setTimeout(async () => {
-        setSyncMessage('Updating account balances...')
-        try {
-          // Trigger data re-fetch from layout
-          await fetchLayoutData()
-          setSyncMessage('Synchronized successfully!')
-          setTimeout(() => {
-            setIsSyncing(false)
-            setSyncMessage('')
-          }, 1500)
-        } catch (err) {
-          setIsSyncing(false)
-        }
-      }, 1000)
-    }, 1000)
+      await fetchLayoutData()
+      setSyncMessage('Synchronized successfully!')
+    } catch (err) {
+      toast.error('Failed to sync with Plaid')
+    } finally {
+      setTimeout(() => {
+        setIsSyncing(false)
+        setSyncMessage('')
+      }, 1500)
+    }
   }
 
-  // ── Connect New Account Flow (Plaid Simulator) ──
-  const startPlaidFlow = () => {
-    setSelectedBank(null)
-    setNewAccNickname('')
-    setNewAccType('checking')
-    setNewAccBalance('1500')
-    setPlaidStep(1)
-    setIsPlaidModalOpen(true)
-  }
-
-  const handleSelectBank = (bank) => {
-    setSelectedBank(bank)
-    setNewAccNickname(`${bank.name} Active`)
-    setPlaidStep(2)
-  }
-
-  const handleCreateAccountSubmit = async (e) => {
-    e.preventDefault()
-    if (!newAccNickname || !selectedBank) return
-    const balanceNum = parseFloat(newAccBalance)
-    if (isNaN(balanceNum)) return
-
-    setIsLinkingSubmitting(true)
-    setPlaidStep(3) // Transition to "Verifying..." animation loader
-
-    setTimeout(async () => {
-      try {
-        await api.createAccount(newAccNickname, newAccType, balanceNum, selectedBank.color)
-        setPlaidStep(4) // Connected Success state
-        toast.success(`${newAccNickname} linked successfully.`)
-        await fetchLayoutData()
-      } catch (err) {
-        toast.error(err.message || 'Failed to link account')
-        setPlaidStep(2)
-      } finally {
-        setIsLinkingSubmitting(false)
-      }
-    }, 2000)
-  }
 
   // ── Rename Account Flow ──
   const triggerRenameModal = (account) => {
@@ -249,21 +196,21 @@ export default function Accounts() {
       <main className="p-6 md:p-8 flex flex-col gap-6 md:gap-8 max-w-7xl w-full mx-auto animate-in fade-in duration-300">
         
         {/* Top Summary Bar */}
-        <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-sm border border-wise-ink/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="bg-card p-6 md:p-8 rounded-[24px] shadow-sm border border-border/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Total Net Worth</span>
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Net Worth</span>
             <div className="flex items-baseline gap-2">
-              <h1 className="text-4xl md:text-5xl font-black text-wise-ink tracking-tight font-sans">
+              <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight font-sans">
                 ₹{totalNetWorth.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </h1>
-              <span className="text-sm font-bold text-wise-mute">INR</span>
+              <span className="text-sm font-bold text-muted-foreground">INR</span>
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs bg-wise-green-pale text-wise-positive-deep font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="text-xs bg-primary/20 text-success font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <Check className="size-3.5" />
                 Live Balance
               </span>
-              <span className="text-xs text-wise-mute font-semibold">
+              <span className="text-xs text-muted-foreground font-semibold">
                 Across {accounts.length} connected accounts
               </span>
             </div>
@@ -274,27 +221,21 @@ export default function Accounts() {
               onClick={handleSyncAll}
               disabled={isSyncing}
               variant="outline"
-              className="flex-1 md:flex-initial border-wise-ink/15 text-wise-ink font-bold rounded-full h-12 px-6 cursor-pointer gap-2 transition-all hover:bg-wise-canvas-soft select-none"
+              className="flex-1 md:flex-initial border-border text-foreground font-bold rounded-full h-12 px-6 cursor-pointer gap-2 transition-all hover:bg-muted select-none"
             >
               <RefreshCw className={cn("size-4 shrink-0", isSyncing && "animate-spin")} />
               {isSyncing ? 'Syncing...' : 'Sync All'}
             </Button>
             
-            <Button 
-              onClick={startPlaidFlow}
-              className="flex-1 md:flex-initial bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-full h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
-            >
-              <Plus className="size-4 shrink-0" />
-              Connect new account
-            </Button>
+            <PlaidLinkButton onLinked={fetchLayoutData} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-12 px-5 shadow-xs cursor-pointer gap-2" />
           </div>
         </div>
 
         {/* Sync Status Banner */}
         {isSyncing && (
           <div className="bg-primary/25 border border-primary/45 p-4 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top duration-300">
-            <Loader2 className="size-5 text-wise-ink animate-spin shrink-0" />
-            <span className="text-sm font-semibold text-wise-ink">{syncMessage}</span>
+            <Loader2 className="size-5 text-foreground animate-spin shrink-0" />
+            <span className="text-sm font-semibold text-foreground">{syncMessage}</span>
           </div>
         )}
 
@@ -304,12 +245,12 @@ export default function Accounts() {
           {/* Section 1: Checking & Savings */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="size-9 rounded-xl bg-wise-canvas-soft flex items-center justify-center text-wise-body border border-wise-ink/5">
+              <div className="size-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground border border-border/50">
                 <Coins className="size-4.5" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-wise-ink">Checking & Savings</h3>
-                <p className="text-xs text-wise-mute">Daily transactional liquid cash reserves</p>
+                <h3 className="text-lg font-black text-foreground">Checking & Savings</h3>
+                <p className="text-xs text-muted-foreground">Daily transactional liquid cash reserves</p>
               </div>
               <Badge variant="secondary" className="ml-2 font-bold font-mono">
                 {checkingSavingsAccounts.length}
@@ -317,18 +258,16 @@ export default function Accounts() {
             </div>
 
             {checkingSavingsAccounts.length === 0 ? (
-              <Card className="rounded-[24px] border-dashed border-2 border-wise-ink/10 bg-transparent py-12 px-6 flex flex-col items-center justify-center text-center">
-                <BuildingIcon className="size-10 text-wise-mute opacity-40 mb-3" />
-                <p className="text-sm font-bold text-wise-ink">No liquid bank accounts connected yet</p>
-                <p className="text-xs text-wise-mute max-w-xs mt-1">Link checking or savings credentials secure sandbox environment.</p>
-                <Button onClick={startPlaidFlow} className="mt-4 bg-primary text-wise-ink font-bold h-10 px-5 rounded-full cursor-pointer hover:bg-wise-green-hover text-xs">
-                  Link Account
-                </Button>
+              <Card className="rounded-[24px] border-dashed border-2 border-border bg-transparent py-12 px-6 flex flex-col items-center justify-center text-center">
+                <BuildingIcon className="size-10 text-muted-foreground opacity-40 mb-3" />
+                <p className="text-sm font-bold text-foreground">No liquid bank accounts connected yet</p>
+                <p className="text-xs text-muted-foreground max-w-xs mt-1">Link checking or savings credentials secure sandbox environment.</p>
+                <PlaidLinkButton onLinked={fetchLayoutData} className="mt-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-10 px-5 cursor-pointer gap-2" />
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {checkingSavingsAccounts.map((acc) => (
-                  <Card key={acc._id} className="rounded-[24px] border-none bg-white p-6 shadow-xs relative flex flex-col justify-between min-h-[160px] group transition-all duration-300 hover:shadow-sm">
+                  <Card key={acc._id} className="rounded-[24px] border-none bg-card p-6 shadow-xs relative flex flex-col justify-between min-h-[160px] group transition-all duration-300 hover:shadow-sm">
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-3.5">
                         <div 
@@ -338,8 +277,8 @@ export default function Accounts() {
                           {acc.name.substring(0, 2).toUpperCase()}
                         </div>
                         <div>
-                          <h4 className="text-base font-black text-wise-ink group-hover:text-primary-foreground transition-colors">{acc.name}</h4>
-                          <span className="text-[10px] bg-wise-canvas-soft text-wise-body font-bold uppercase px-2 py-0.5 rounded-full tracking-wider mt-1 inline-block">
+                          <h4 className="text-base font-black text-foreground group-hover:text-primary-foreground transition-colors">{acc.name}</h4>
+                          <span className="text-[10px] bg-muted text-muted-foreground font-bold uppercase px-2 py-0.5 rounded-full tracking-wider mt-1 inline-block">
                             {acc.type === 'checking' ? 'Checking Account' : 'Savings Account'}
                           </span>
                         </div>
@@ -347,8 +286,8 @@ export default function Accounts() {
 
                       {/* Dropdown Menu action */}
                       <DropdownMenu>
-                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" aria-label="Account actions" />}>
-                          <MoreVertical className="size-4 text-wise-body" />
+                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted shrink-0 cursor-pointer" aria-label="Account actions" />}>
+                          <MoreVertical className="size-4 text-muted-foreground" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
                           <DropdownMenuItem onClick={() => triggerRenameModal(acc)} className="cursor-pointer">
@@ -363,22 +302,22 @@ export default function Accounts() {
                       </DropdownMenu>
                     </div>
 
-                    <div className="flex items-baseline justify-between mt-6 border-t border-wise-ink/5 pt-4">
+                    <div className="flex items-baseline justify-between mt-6 border-t border-border/50 pt-4">
                       <div>
-                        <span className="text-[10px] font-bold text-wise-mute uppercase tracking-wider block">Current Balance</span>
-                        <span className="text-2xl font-black text-wise-ink tracking-tight font-sans block mt-0.5">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Current Balance</span>
+                        <span className="text-2xl font-black text-foreground tracking-tight font-sans block mt-0.5">
                           ₹{acc.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] font-semibold text-wise-mute block">Available Balance</span>
-                        <span className="text-sm font-bold text-wise-body font-sans block mt-0.5">
+                        <span className="text-[10px] font-semibold text-muted-foreground block">Available Balance</span>
+                        <span className="text-sm font-bold text-muted-foreground font-sans block mt-0.5">
                           ₹{acc.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </span>
                       </div>
                     </div>
 
-                    <div className="absolute bottom-2.5 right-6 text-[9px] font-semibold text-wise-mute">
+                    <div className="absolute bottom-2.5 right-6 text-[9px] font-semibold text-muted-foreground">
                       {getSyncTimeDescription(acc.updatedAt)}
                     </div>
                   </Card>
@@ -390,12 +329,12 @@ export default function Accounts() {
           {/* Section 2: Credit Cards */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="size-9 rounded-xl bg-wise-canvas-soft flex items-center justify-center text-wise-body border border-wise-ink/5">
+              <div className="size-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground border border-border/50">
                 <Plus className="size-4.5" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-wise-ink">Credit Cards</h3>
-                <p className="text-xs text-wise-mute">Sandbox credit limits and usage stats</p>
+                <h3 className="text-lg font-black text-foreground">Credit Cards</h3>
+                <p className="text-xs text-muted-foreground">Sandbox credit limits and usage stats</p>
               </div>
               <Badge variant="secondary" className="ml-2 font-bold font-mono">
                 {creditCardAccounts.length}
@@ -403,13 +342,11 @@ export default function Accounts() {
             </div>
 
             {creditCardAccounts.length === 0 ? (
-              <Card className="rounded-[24px] border-dashed border-2 border-wise-ink/10 bg-transparent py-12 px-6 flex flex-col items-center justify-center text-center">
-                <Lock className="size-10 text-wise-mute opacity-40 mb-3" />
-                <p className="text-sm font-bold text-wise-ink">No credit card accounts connected</p>
-                <p className="text-xs text-wise-mute max-w-xs mt-1">Import credit limit details to test available sandbox capacities.</p>
-                <Button onClick={startPlaidFlow} className="mt-4 bg-primary text-wise-ink font-bold h-10 px-5 rounded-full cursor-pointer hover:bg-wise-green-hover text-xs">
-                  Link Credit Card
-                </Button>
+              <Card className="rounded-[24px] border-dashed border-2 border-border bg-transparent py-12 px-6 flex flex-col items-center justify-center text-center">
+                <Lock className="size-10 text-muted-foreground opacity-40 mb-3" />
+                <p className="text-sm font-bold text-foreground">No credit card accounts connected</p>
+                <p className="text-xs text-muted-foreground max-w-xs mt-1">Import credit limit details to test available sandbox capacities.</p>
+                <PlaidLinkButton onLinked={fetchLayoutData} className="mt-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-10 px-5 cursor-pointer gap-2" />
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -459,9 +396,9 @@ export default function Accounts() {
                           <CreditCardBack className="bg-gradient-to-br from-zinc-950 to-black text-white p-6 shadow-lg flex flex-col justify-between border border-white/10">
                             <CreditCardMagStripe className="w-full h-10 bg-black -mx-6 mt-2" />
                             
-                            <div className="flex items-center justify-between gap-4 mt-4 bg-white/5 p-2 rounded-lg">
+                            <div className="flex items-center justify-between gap-4 mt-4 bg-card/5 p-2 rounded-lg">
                               <div className="flex-1 h-6 bg-slate-300/20 rounded-xs" />
-                              <div className="bg-white text-black px-2 py-0.5 text-xs font-bold font-mono rounded-xs">
+                              <div className="bg-card text-black px-2 py-0.5 text-xs font-bold font-mono rounded-xs">
                                 <CreditCardCvv>847</CreditCardCvv>
                               </div>
                             </div>
@@ -479,19 +416,19 @@ export default function Accounts() {
                       </div>
 
                       {/* Card Balance, Actions & Usage Progress */}
-                      <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex-1 flex flex-col justify-between">
+                      <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex-1 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start">
                             <div>
-                              <span className="text-[10px] font-bold text-wise-mute uppercase tracking-wider block">Outstanding Balance</span>
-                              <span className="text-2xl font-black text-wise-ink tracking-tight font-sans block mt-1">
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Outstanding Balance</span>
+                              <span className="text-2xl font-black text-foreground tracking-tight font-sans block mt-1">
                                 ₹{acc.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                               </span>
                             </div>
                             
                             <DropdownMenu>
-                              <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" aria-label="Account actions" />}>
-                                <MoreVertical className="size-4 text-wise-body" />
+                              <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted shrink-0 cursor-pointer" aria-label="Account actions" />}>
+                                <MoreVertical className="size-4 text-muted-foreground" />
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-48">
                                 <DropdownMenuItem onClick={() => triggerRenameModal(acc)} className="cursor-pointer">
@@ -508,24 +445,24 @@ export default function Accounts() {
 
                           {/* Progress indicators */}
                           <div className="mt-5 space-y-2">
-                            <div className="flex justify-between text-xs font-semibold text-wise-ink">
+                            <div className="flex justify-between text-xs font-semibold text-foreground">
                               <span>Limit utilization</span>
                               <span className="font-mono">
                                 ₹{acc.balance.toLocaleString('en-IN')} of ₹{limits.limit.toLocaleString('en-IN')} ({usagePercentage.toFixed(0)}%)
                               </span>
                             </div>
-                            <Progress value={usagePercentage} className={cn("h-2 rounded-full", usagePercentage > 85 ? "bg-wise-negative" : "bg-primary")} />
+                            <Progress value={usagePercentage} className={cn("h-2 rounded-full", usagePercentage > 85 ? "bg-destructive" : "bg-primary")} />
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center mt-5 pt-3 border-t border-wise-ink/5">
-                          <span className="text-[10px] font-bold text-wise-mute uppercase">Available Credit</span>
-                          <span className="text-sm font-black text-wise-positive font-mono">
+                        <div className="flex justify-between items-center mt-5 pt-3 border-t border-border/50">
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase">Available Credit</span>
+                          <span className="text-sm font-black text-success font-mono">
                             ₹{limits.available.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                           </span>
                         </div>
 
-                        <div className="text-[9px] font-semibold text-wise-mute text-right mt-1.5">
+                        <div className="text-[9px] font-semibold text-muted-foreground text-right mt-1.5">
                           {getSyncTimeDescription(acc.updatedAt)}
                         </div>
                       </Card>
@@ -539,12 +476,12 @@ export default function Accounts() {
           {/* Section 3: Investment Portfolios */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="size-9 rounded-xl bg-wise-canvas-soft flex items-center justify-center text-wise-body border border-wise-ink/5">
+              <div className="size-9 rounded-xl bg-muted flex items-center justify-center text-muted-foreground border border-border/50">
                 <TrendingUp className="size-4.5" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-wise-ink">Brokerage & Investments</h3>
-                <p className="text-xs text-wise-mute">Equities, mutual funds, or digital crypto assets</p>
+                <h3 className="text-lg font-black text-foreground">Brokerage & Investments</h3>
+                <p className="text-xs text-muted-foreground">Equities, mutual funds, or digital crypto assets</p>
               </div>
               <Badge variant="secondary" className="ml-2 font-bold font-mono">
                 {investmentAccounts.length}
@@ -552,18 +489,16 @@ export default function Accounts() {
             </div>
 
             {investmentAccounts.length === 0 ? (
-              <Card className="rounded-[24px] border-dashed border-2 border-wise-ink/10 bg-transparent py-12 px-6 flex flex-col items-center justify-center text-center">
-                <ShieldAlert className="size-10 text-wise-mute opacity-40 mb-3" />
-                <p className="text-sm font-bold text-wise-ink">No investment assets linked</p>
-                <p className="text-xs text-wise-mute max-w-xs mt-1">Connect investment sandbox accounts to track brokerage performance.</p>
-                <Button onClick={startPlaidFlow} className="mt-4 bg-primary text-wise-ink font-bold h-10 px-5 rounded-full cursor-pointer hover:bg-wise-green-hover text-xs">
-                  Link Brokerage
-                </Button>
+              <Card className="rounded-[24px] border-dashed border-2 border-border bg-transparent py-12 px-6 flex flex-col items-center justify-center text-center">
+                <ShieldAlert className="size-10 text-muted-foreground opacity-40 mb-3" />
+                <p className="text-sm font-bold text-foreground">No investment assets linked</p>
+                <p className="text-xs text-muted-foreground max-w-xs mt-1">Connect investment sandbox accounts to track brokerage performance.</p>
+                <PlaidLinkButton onLinked={fetchLayoutData} className="mt-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-10 px-5 cursor-pointer gap-2" />
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {investmentAccounts.map((acc) => (
-                  <Card key={acc._id} className="rounded-[24px] border-none bg-white p-6 shadow-xs relative flex flex-col justify-between min-h-[160px] group transition-all duration-300 hover:shadow-sm">
+                  <Card key={acc._id} className="rounded-[24px] border-none bg-card p-6 shadow-xs relative flex flex-col justify-between min-h-[160px] group transition-all duration-300 hover:shadow-sm">
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-3.5">
                         <div 
@@ -573,16 +508,16 @@ export default function Accounts() {
                           {acc.name.substring(0, 2).toUpperCase()}
                         </div>
                         <div>
-                          <h4 className="text-base font-black text-wise-ink group-hover:text-primary-foreground transition-colors">{acc.name}</h4>
-                          <span className="text-[10px] bg-wise-canvas-soft text-wise-body font-bold uppercase px-2 py-0.5 rounded-full tracking-wider mt-1 inline-block">
+                          <h4 className="text-base font-black text-foreground group-hover:text-primary-foreground transition-colors">{acc.name}</h4>
+                          <span className="text-[10px] bg-muted text-muted-foreground font-bold uppercase px-2 py-0.5 rounded-full tracking-wider mt-1 inline-block">
                             Investment Portfolio
                           </span>
                         </div>
                       </div>
 
                       <DropdownMenu>
-                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-wise-canvas-soft shrink-0 cursor-pointer" aria-label="Account actions" />}>
-                          <MoreVertical className="size-4 text-wise-body" />
+                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted shrink-0 cursor-pointer" aria-label="Account actions" />}>
+                          <MoreVertical className="size-4 text-muted-foreground" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
                           <DropdownMenuItem onClick={() => triggerRenameModal(acc)} className="cursor-pointer">
@@ -597,25 +532,25 @@ export default function Accounts() {
                       </DropdownMenu>
                     </div>
 
-                    <div className="flex items-baseline justify-between mt-6 border-t border-wise-ink/5 pt-4">
+                    <div className="flex items-baseline justify-between mt-6 border-t border-border/50 pt-4">
                       <div>
-                        <span className="text-[10px] font-bold text-wise-mute uppercase tracking-wider block">Portfolio Value</span>
-                        <span className="text-2xl font-black text-wise-ink tracking-tight font-sans block mt-0.5">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Portfolio Value</span>
+                        <span className="text-2xl font-black text-foreground tracking-tight font-sans block mt-0.5">
                           ₹{acc.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] font-semibold text-wise-mute block flex items-center gap-1 justify-end">
-                          <ArrowUpRight className="size-3.5 text-wise-positive" />
+                        <span className="text-[10px] font-semibold text-muted-foreground block flex items-center gap-1 justify-end">
+                          <ArrowUpRight className="size-3.5 text-success" />
                           Growth (Mock)
                         </span>
-                        <span className="text-sm font-bold text-wise-positive font-mono block mt-0.5">
+                        <span className="text-sm font-bold text-success font-mono block mt-0.5">
                           +14.2%
                         </span>
                       </div>
                     </div>
 
-                    <div className="absolute bottom-2.5 right-6 text-[9px] font-semibold text-wise-mute">
+                    <div className="absolute bottom-2.5 right-6 text-[9px] font-semibold text-muted-foreground">
                       {getSyncTimeDescription(acc.updatedAt)}
                     </div>
                   </Card>
@@ -627,176 +562,29 @@ export default function Accounts() {
         </div>
       </main>
 
-      {/* ── Connect New Account Flow Dialog (Plaid Simulator) ── */}
-      {isPlaidModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-md p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
-            <button 
-              onClick={() => setIsPlaidModalOpen(false)} 
-              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
-            >
-              <X className="size-5" />
-            </button>
-            
-            {/* Step 1: Select Financial Institution */}
-            {plaidStep === 1 && (
-              <div>
-                <div className="flex items-center gap-2 mb-2 text-primary-foreground">
-                  <BuildingIcon className="size-6 text-wise-ink" />
-                  <h3 className="text-xl font-black text-wise-ink">Select Bank / Institution</h3>
-                </div>
-                <p className="text-xs text-wise-body mb-5">Select a sandbox banking platform to authenticate via Plaid simulator.</p>
-                
-                {/* Search Bar mockup */}
-                <div className="relative mb-4">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-wise-mute size-4" />
-                  <Input placeholder="Search popular banks..." className="rounded-xl pl-10 border-wise-ink/10 h-10" />
-                </div>
 
-                <div className="grid grid-cols-2 gap-3 max-h-[280px] overflow-y-auto pr-1">
-                  {POPULAR_BANKS.map((bank, index) => (
-                    <button 
-                      key={index}
-                      onClick={() => handleSelectBank(bank)}
-                      className="border border-wise-ink/5 p-3 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-wise-canvas-soft/60 transition-colors h-24"
-                    >
-                      <div className={cn("size-8 rounded-full flex items-center justify-center text-white text-xs font-black", bank.logoBg)}>
-                        {bank.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <span className="text-xs font-black text-wise-ink text-center truncate w-full">{bank.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 2: Account Authentication details */}
-            {plaidStep === 2 && selectedBank && (
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Lock className="size-5 text-wise-mute" />
-                  <h3 className="text-xl font-black text-wise-ink">Link {selectedBank.name}</h3>
-                </div>
-                <p className="text-xs text-wise-body mb-5">Enter nickname, account type, and sandbox initial balance.</p>
-
-                <form onSubmit={handleCreateAccountSubmit} className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-wise-body uppercase tracking-wider">Account Nickname</label>
-                    <Input 
-                      placeholder="e.g. Primary Checking, Vacation Fund" 
-                      value={newAccNickname}
-                      onChange={(e) => setNewAccNickname(e.target.value)}
-                      className="rounded-xl h-11 px-4 border-wise-ink/15 text-sm"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-wise-body uppercase tracking-wider">Account Type</label>
-                      <Select value={newAccType} onValueChange={setNewAccType}>
-                        <SelectTrigger className="w-full h-11 text-xs">
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="checking">Checking</SelectItem>
-                          <SelectItem value="savings">Savings</SelectItem>
-                          <SelectItem value="credit">Credit Card</SelectItem>
-                          <SelectItem value="investment">Investment</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-wise-body uppercase tracking-wider">Initial Balance (₹)</label>
-                      <Input 
-                        type="number" 
-                        placeholder="1500.00" 
-                        value={newAccBalance}
-                        onChange={(e) => setNewAccBalance(e.target.value)}
-                        className="rounded-xl h-11 px-4 border-wise-ink/15 text-sm"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-4 flex gap-3">
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
-                      onClick={() => setPlaidStep(1)}
-                      className="flex-1 rounded-full h-11 font-bold text-xs cursor-pointer"
-                    >
-                      Back
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      className="flex-1 bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-full h-11 text-xs cursor-pointer"
-                    >
-                      Link Credentials
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            )}
-
-            {/* Step 3: Loader animation */}
-            {plaidStep === 3 && (
-              <div className="py-12 flex flex-col items-center justify-center gap-4 text-center">
-                <Loader2 className="size-12 text-primary animate-spin" />
-                <div>
-                  <h4 className="text-base font-black text-wise-ink">Exchanging Token Credentials...</h4>
-                  <p className="text-xs text-wise-mute max-w-xs mx-auto mt-1">Establishing encrypted session channel with Plaid sandbox nodes.</p>
-                </div>
-              </div>
-            )}
-
-            {/* Step 4: Success confirmation */}
-            {plaidStep === 4 && selectedBank && (
-              <div className="py-8 text-center flex flex-col items-center justify-center gap-5">
-                <div className="size-16 rounded-full bg-wise-green-pale flex items-center justify-center text-wise-positive-deep border border-wise-positive/20">
-                  <Check className="size-8" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-wise-ink">Account Synced Successfully!</h3>
-                  <p className="text-xs text-wise-body max-w-xs mx-auto mt-1.5">
-                    Your account <strong>{newAccNickname}</strong> is now securely linked to the PFM Dashboard ledger.
-                  </p>
-                </div>
-                <Button 
-                  onClick={() => setIsPlaidModalOpen(false)}
-                  className="w-full bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-full h-11 text-xs cursor-pointer mt-2"
-                >
-                  Return to Dashboard
-                </Button>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
 
       {/* ── Rename Account Dialog ── */}
       {isRenameModalOpen && accountToRename && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-sm p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
+          <div className="bg-card rounded-3xl w-full max-w-sm p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
             <button 
               onClick={() => { setIsRenameModalOpen(false); setAccountToRename(null); }} 
-              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
 
-            <h3 className="text-xl font-black text-wise-ink mb-1">Rename Account</h3>
-            <p className="text-xs text-wise-body mb-5">Update the nickname of your synchronized financial asset.</p>
+            <h3 className="text-xl font-black text-foreground mb-1">Rename Account</h3>
+            <p className="text-xs text-muted-foreground mb-5">Update the nickname of your synchronized financial asset.</p>
 
             <form onSubmit={handleRenameSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-wise-body uppercase tracking-wider">Account Nickname</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Account Nickname</label>
                 <Input 
                   value={renameName}
                   onChange={(e) => setRenameName(e.target.value)}
-                  className="rounded-xl h-11 px-4 border-wise-ink/15 text-sm"
+                  className="rounded-xl h-11 px-4 border-border text-sm"
                   required
                 />
               </div>
@@ -812,7 +600,7 @@ export default function Accounts() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="flex-1 bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-full h-11 text-xs cursor-pointer"
+                  className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full h-11 text-xs cursor-pointer"
                 >
                   Update Name
                 </Button>
@@ -825,10 +613,10 @@ export default function Accounts() {
       {/* ── Disconnect Account Confirmation Dialog ── */}
       {isDeleteModalOpen && accountToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-sm p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
+          <div className="bg-card rounded-3xl w-full max-w-sm p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
             <button 
               onClick={() => { setIsDeleteModalOpen(false); setAccountToDelete(null); }} 
-              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
@@ -837,8 +625,8 @@ export default function Accounts() {
               <ShieldAlert className="size-6" />
             </div>
 
-            <h3 className="text-xl font-black text-wise-ink mb-1">Disconnect Account?</h3>
-            <p className="text-xs text-wise-body mb-5 leading-relaxed">
+            <h3 className="text-xl font-black text-foreground mb-1">Disconnect Account?</h3>
+            <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
               Are you sure you want to disconnect <strong>{accountToDelete.name}</strong>? This will remove all associated balance and historical ledger synchronizations.
             </p>
 

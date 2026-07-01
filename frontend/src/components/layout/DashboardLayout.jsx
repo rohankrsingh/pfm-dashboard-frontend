@@ -56,10 +56,10 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from "@/lib/utils"
 
 const statuses = [
-  { value: "available", label: "Available", color: "bg-green-500" },
-  { value: "away", label: "Away", color: "bg-amber-500" },
-  { value: "busy", label: "Busy", color: "bg-red-500" },
-  { value: "offline", label: "Offline", color: "bg-gray-400" },
+  { value: "available", label: "Available", color: "bg-primary" },
+  { value: "away", label: "Away", color: "bg-muted-foreground" },
+  { value: "busy", label: "Busy", color: "bg-destructive" },
+  { value: "offline", label: "Offline", color: "bg-secondary" },
 ]
 
 export default function DashboardLayout() {
@@ -147,21 +147,21 @@ export default function DashboardLayout() {
 
   if (isLoading && accounts.length === 0) {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-wise-canvas-soft font-sans gap-4">
-        <div className="w-12 h-12 border-4 border-wise-ink border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm font-bold text-wise-ink uppercase tracking-wider animate-pulse">Loading dashboard...</span>
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-muted font-sans gap-4">
+        <div className="w-12 h-12 border-4 border-border border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-bold text-foreground uppercase tracking-wider animate-pulse">Loading dashboard...</span>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-wise-canvas-soft font-sans gap-4 p-6 text-center">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-muted font-sans gap-4 p-6 text-center">
         <div className="p-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-semibold rounded-2xl max-w-md">
           <p className="font-bold mb-1">Error Loading Dashboard</p>
           <p className="text-xs leading-relaxed opacity-90">{error}</p>
         </div>
-        <Button onClick={fetchLayoutData} className="bg-wise-ink text-white font-bold rounded-full px-6 py-2 cursor-pointer">
+        <Button onClick={fetchLayoutData} className="bg-primary text-white font-bold rounded-full px-6 py-2 cursor-pointer">
           Try Again
         </Button>
       </div>
@@ -169,24 +169,24 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className='flex min-h-dvh w-full text-wise-ink bg-wise-canvas-soft font-sans'>
+    <div className='flex min-h-dvh w-full text-foreground bg-muted font-sans'>
       <SidebarProvider>
         {/* Sidebar Layout */}
-        <Sidebar className="border-r border-wise-ink/10 bg-white">
-          <SidebarContent className="bg-white">
+        <Sidebar className="border-r border-border bg-card">
+          <SidebarContent className="bg-card">
             <SidebarGroup>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem className="mb-4">
                     <div className="flex items-center gap-2.5 px-3 py-4">
-                      <div className="w-9 h-9 rounded-xl bg-wise-ink flex items-center justify-center">
+                      <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
                         <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
                         </svg>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-base font-black tracking-tight text-wise-ink">PFM Sync</span>
-                        <span className="text-[10px] font-semibold text-wise-mute">Internship Project</span>
+                        <span className="text-base font-black tracking-tight text-foreground">PFM Sync</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground">Internship Project</span>
                       </div>
                     </div>
                   </SidebarMenuItem>
@@ -195,7 +195,7 @@ export default function DashboardLayout() {
             </SidebarGroup>
 
             <SidebarGroup>
-              <SidebarGroupLabel className="text-wise-mute font-bold text-xs uppercase px-3">PFM Management</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-muted-foreground font-bold text-xs uppercase px-3">PFM Management</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu className="px-1.5 space-y-1">
                   <SidebarMenuItem>
@@ -204,8 +204,8 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/dashboard"
-                          ? "bg-primary text-wise-ink shadow-sm"
-                          : "hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
+                          ? "bg-primary text-foreground shadow-sm"
+                          : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <LayoutDashboard className="size-4 shrink-0" />
@@ -218,8 +218,8 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/accounts"
-                          ? "bg-primary text-wise-ink shadow-sm"
-                          : "hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
+                          ? "bg-primary text-foreground shadow-sm"
+                          : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <BuildingIcon className="size-4 shrink-0" />
@@ -232,8 +232,8 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/transactions"
-                          ? "bg-primary text-wise-ink shadow-sm"
-                          : "hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
+                          ? "bg-primary text-foreground shadow-sm"
+                          : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <Receipt className="size-4 shrink-0" />
@@ -246,8 +246,8 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/settings"
-                          ? "bg-primary text-wise-ink shadow-sm"
-                          : "hover:bg-wise-canvas-soft text-wise-mute hover:text-wise-ink"
+                          ? "bg-primary text-foreground shadow-sm"
+                          : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <SettingsIcon className="size-4 shrink-0" />
@@ -263,10 +263,10 @@ export default function DashboardLayout() {
         {/* Dashboard Main View */}
         <div className='flex flex-1 flex-col overflow-x-hidden min-h-screen'>
           {/* Header */}
-          <header className='bg-white h-16 border-b border-wise-ink/10 flex items-center justify-between px-6 sticky top-0 z-40 backdrop-blur-md bg-white/95'>
+          <header className='bg-card h-16 border-b border-border flex items-center justify-between px-6 sticky top-0 z-40 backdrop-blur-md bg-card/95'>
             <div className='flex items-center gap-4'>
-              <SidebarTrigger className='[&_svg]:size-5! hover:bg-wise-canvas-soft p-2 rounded-xl transition-colors cursor-pointer' />
-              <Separator orientation='vertical' className='hidden h-4! sm:block bg-wise-ink/15' />
+              <SidebarTrigger className='[&_svg]:size-5! hover:bg-muted p-2 rounded-xl transition-colors cursor-pointer' />
+              <Separator orientation='vertical' className='hidden h-4! sm:block bg-primary/15' />
               <Breadcrumb className='hidden sm:block'>
                 <BreadcrumbList>
                   <BreadcrumbItem>
@@ -274,7 +274,7 @@ export default function DashboardLayout() {
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="font-bold text-wise-ink">{pageName}</BreadcrumbPage>
+                    <BreadcrumbPage className="font-bold text-foreground">{pageName}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -287,7 +287,7 @@ export default function DashboardLayout() {
                   render={
                     <Button 
                       variant="ghost" 
-                      className="flex items-center gap-2 px-3 py-1.5 h-10 rounded-xl hover:bg-wise-canvas-soft cursor-pointer text-xs font-semibold text-wise-body hover:text-wise-ink border-none outline-none" 
+                      className="flex items-center gap-2 px-3 py-1.5 h-10 rounded-xl hover:bg-muted cursor-pointer text-xs font-semibold text-muted-foreground hover:text-foreground border-none outline-none" 
                     />
                   }
                 >
@@ -295,8 +295,8 @@ export default function DashboardLayout() {
                     <AvatarImage src="https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png" />
                     <AvatarFallback>EV</AvatarFallback>
                   </Avatar>
-                  <span className="text-xs font-bold text-wise-ink">{userProfile.name}</span>
-                  <ChevronsUpDownIcon className="size-3.5 text-wise-mute ml-1 opacity-60" aria-hidden="true" />
+                  <span className="text-xs font-bold text-foreground">{userProfile.name}</span>
+                  <ChevronsUpDownIcon className="size-3.5 text-muted-foreground ml-1 opacity-60" aria-hidden="true" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-60" align="end" sideOffset={8}>
                   <div className="flex items-center gap-3 px-1 pt-1.5 pb-2">
@@ -305,10 +305,10 @@ export default function DashboardLayout() {
                       <AvatarFallback>EV</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="text-wise-ink text-sm font-bold leading-tight">
+                      <span className="text-foreground text-sm font-bold leading-tight">
                         {userProfile.name}
                       </span>
-                      <span className="text-wise-mute text-xs leading-tight">
+                      <span className="text-muted-foreground text-xs leading-tight">
                         {userProfile.email}
                       </span>
                     </div>
@@ -317,21 +317,21 @@ export default function DashboardLayout() {
                   {/* Theme Selector */}
                   <div className="py-2 px-1">
                     <Tabs value={theme} onValueChange={setTheme}>
-                      <TabsList className="w-full bg-wise-canvas-soft p-1 rounded-xl flex h-10 items-center">
-                        <TabsTrigger value="light" className="h-8 flex-1 text-xs font-semibold flex items-center justify-center rounded-lg data-[state=active]:bg-white data-[state=active]:text-wise-ink text-wise-mute transition-all cursor-pointer">
+                      <TabsList className="w-full bg-muted p-1 rounded-xl flex h-10 items-center">
+                        <TabsTrigger value="light" className="h-8 flex-1 text-xs font-semibold flex items-center justify-center rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground text-muted-foreground transition-all cursor-pointer">
                           <SunIcon className="size-4" aria-hidden="true" />
                         </TabsTrigger>
-                        <TabsTrigger value="dark" className="h-8 flex-1 text-xs font-semibold flex items-center justify-center rounded-lg data-[state=active]:bg-white data-[state=active]:text-wise-ink text-wise-mute transition-all cursor-pointer">
+                        <TabsTrigger value="dark" className="h-8 flex-1 text-xs font-semibold flex items-center justify-center rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground text-muted-foreground transition-all cursor-pointer">
                           <MoonIcon className="size-4" aria-hidden="true" />
                         </TabsTrigger>
-                        <TabsTrigger value="system" className="h-8 flex-1 text-xs font-semibold flex items-center justify-center rounded-lg data-[state=active]:bg-white data-[state=active]:text-wise-ink text-wise-mute transition-all cursor-pointer">
+                        <TabsTrigger value="system" className="h-8 flex-1 text-xs font-semibold flex items-center justify-center rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground text-muted-foreground transition-all cursor-pointer">
                           <MonitorIcon className="size-4" aria-hidden="true" />
                         </TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>
                   
-                  <DropdownMenuSeparator className="bg-wise-ink/5" />
+                  <DropdownMenuSeparator className="bg-primary/5" />
                   
                   <DropdownMenuGroup>
                     <DropdownMenuItem
@@ -390,7 +390,7 @@ export default function DashboardLayout() {
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
                   
-                  <DropdownMenuSeparator className="bg-wise-ink/5" />
+                  <DropdownMenuSeparator className="bg-primary/5" />
                   
                   <DropdownMenuGroup>
                     <DropdownMenuItem
@@ -406,7 +406,7 @@ export default function DashboardLayout() {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   
-                  <DropdownMenuSeparator className="bg-wise-ink/5" />
+                  <DropdownMenuSeparator className="bg-primary/5" />
                   
                   <DropdownMenuItem 
                     onClick={handleLogout}

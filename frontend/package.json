@@ -28,6 +28,7 @@
     "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.78.0",
+    "react-plaid-link": "^4.1.1",
     "react-router-dom": "^7.17.0",
     "react-svg-credit-card-payment-icons": "^6.0.4",
     "recharts": "^3.8.0",

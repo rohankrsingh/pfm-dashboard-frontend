@@ -30,11 +30,22 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    // Plaid personal_finance_category.detailed
+    subcategory: {
+      type: String,
+      default: null
+    },
     date: {
       type: Date,
       default: Date.now
     },
+    // How the transaction was made: online, in store, other
+    paymentChannel: {
+      type: String,
+      default: null
+    },
     notes: String,
+    // Plaid fields
     plaidTransactionId: {
       type: String,
       sparse: true,
@@ -49,5 +60,9 @@ const transactionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Index for efficient date-range queries
+transactionSchema.index({ userId: 1, date: -1 });
+transactionSchema.index({ accountId: 1, date: -1 });
 
 export default mongoose.model('Transaction', transactionSchema);

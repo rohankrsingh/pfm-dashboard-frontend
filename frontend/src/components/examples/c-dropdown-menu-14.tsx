@@ -25,10 +25,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronsUpDownIcon, SunIcon, MoonIcon, MonitorIcon, BuildingIcon, PhoneIcon, CheckIcon, SettingsIcon, LifeBuoyIcon, LogOutIcon } from "lucide-react"
 
 const statuses = [
-  { value: "available", label: "Available", color: "bg-green-500" },
-  { value: "away", label: "Away", color: "bg-amber-500" },
-  { value: "busy", label: "Busy", color: "bg-red-500" },
-  { value: "offline", label: "Offline", color: "bg-gray-400" },
+  { value: "available", label: "Available", color: "bg-primary" },
+  { value: "away", label: "Away", color: "bg-muted-foreground" },
+  { value: "busy", label: "Busy", color: "bg-destructive" },
+  { value: "offline", label: "Offline", color: "bg-secondary" },
 ]
 
 export function Pattern() {

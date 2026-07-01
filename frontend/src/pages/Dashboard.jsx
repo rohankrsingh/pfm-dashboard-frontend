@@ -18,7 +18,8 @@ import {
   Tv,
   Briefcase,
   Laptop,
-  Wallet
+  Wallet,
+  Receipt
 } from 'lucide-react'
 
 import {
@@ -84,7 +85,7 @@ export default function Dashboard() {
   const [newTxCategory, setNewTxCategory] = useState('Groceries')
   const [newTxPaidBy, setNewTxPaidBy] = useState('visa')
   const [newTxAccountId, setNewTxAccountId] = useState('')
-  const [linkBankName, setLinkBankName] = useState('Fidelity Investments')
+  const [linkBankName, setLinkBankName] = useState('HDFC Bank')
   const [linkBankBalance, setLinkBankBalance] = useState('5000')
 
   // Mapped accounts for local layout usage
@@ -217,14 +218,19 @@ export default function Dashboard() {
         'Bank of America': '#EF4444',
         'Wells Fargo': '#F59E0B',
         'Citibank Checking': '#3B82F6',
-        'Coinbase Crypto': '#6366F1'
+        'Coinbase Crypto': '#6366F1',
+        'HDFC Bank': '#004C8F',
+        'ICICI Bank': '#E35E14',
+        'State Bank of India': '#00BFFF',
+        'Axis Bank': '#800020',
+        'Kotak Mahindra Bank': '#EC1C24'
       }
       const color = colors[linkBankName] || '#3B82F6'
 
       await api.createAccount(linkBankName, type, balanceNum, color)
 
       setIsLinkModalOpen(false)
-      setLinkBankName('Fidelity Investments')
+      setLinkBankName('HDFC Bank')
       setLinkBankBalance('5000')
       toast.success(`${linkBankName} linked successfully.`)
 
@@ -239,7 +245,7 @@ export default function Dashboard() {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-wise-ink text-white p-3 rounded-xl shadow-lg border border-white/10 text-xs">
+        <div className="bg-primary text-white p-3 rounded-xl shadow-lg border border-white/10 text-xs">
           <p className="font-bold">{data.name}</p>
           <p className="mt-1 font-mono text-primary">₹{data.value.toLocaleString('en-IN', { minimumFractionDigits: 2 })} ({data.percentage.toFixed(1)}%)</p>
         </div>
@@ -254,21 +260,21 @@ export default function Dashboard() {
       const exp = payload[1]?.value || 0
       const net = inc - exp
       return (
-        <div className="bg-wise-ink text-white p-3 rounded-xl shadow-lg border border-white/10 text-xs flex flex-col gap-1.5">
-          <p className="font-bold text-wise-mute border-b border-white/10 pb-1 mb-0.5">{label}</p>
+        <div className="bg-primary text-white p-3 rounded-xl shadow-lg border border-white/10 text-xs flex flex-col gap-1.5">
+          <p className="font-bold text-muted-foreground border-b border-white/10 pb-1 mb-0.5">{label}</p>
           <div className="flex items-center justify-between gap-6">
             <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-wise-accent-cyan" />
+              <span className="size-2 rounded-full bg-primary" />
               <span>Income</span>
             </span>
-            <span className="font-mono font-bold text-wise-accent-cyan">₹{inc.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+            <span className="font-mono font-bold text-primary">₹{inc.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="flex items-center justify-between gap-6">
             <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-wise-negative" />
+              <span className="size-2 rounded-full bg-destructive" />
               <span>Expenses</span>
             </span>
-            <span className="font-mono font-bold text-wise-negative">₹{exp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+            <span className="font-mono font-bold text-destructive">₹{exp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-1 mt-0.5 font-semibold">
             <span>Net Flow</span>
@@ -341,24 +347,24 @@ export default function Dashboard() {
         {/* Welcome Greeting Row */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-wise-ink">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">
               Hello, {userProfile.name}
             </h1>
-            <p className="text-xs text-wise-mute mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Here's an overview of your money sandbox as of today.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <Button 
               onClick={() => setIsTxModalOpen(true)}
-              className="bg-wise-ink text-white hover:bg-wise-ink-deep font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
             >
               <Plus className="size-4 shrink-0" />
               Add Transaction
             </Button>
             <Button 
               onClick={() => setIsLinkModalOpen(true)}
-              className="bg-primary text-wise-ink hover:bg-wise-green-hover font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
+              className="bg-primary text-foreground hover:bg-primary-hover font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
             >
               <LinkIcon className="size-4 shrink-0" />
               Sync Bank Account
@@ -370,7 +376,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {isTxLoading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-[24px] bg-white p-6 h-36 shadow-xs flex flex-col justify-between">
+              <div key={i} className="rounded-[24px] bg-card p-6 h-36 shadow-xs flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <Skeleton className="h-2.5 w-24 rounded-full" />
                   <Skeleton className="size-8 rounded-full" />
@@ -384,72 +390,72 @@ export default function Dashboard() {
           ) : (
             <>
               {/* Card 1: Total Balance */}
-              <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
+              <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col justify-between h-36">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Total Balance</span>
-                  <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Balance</span>
+                  <div className="size-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
                     <Coins className="size-4" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
+                  <h3 className="text-3xl font-black text-foreground tracking-tight font-sans">
                     ₹{totalBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </h3>
-                  <p className="text-xs text-wise-mute mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {mappedAccounts.length} linked account{mappedAccounts.length !== 1 ? 's' : ''}
                   </p>
                 </div>
               </Card>
 
               {/* Card 2: Monthly Spending */}
-              <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
+              <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col justify-between h-36">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Monthly Spending</span>
-                  <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
-                    <ArrowDownRight className="size-4 text-wise-negative" />
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Monthly Spending</span>
+                  <div className="size-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                    <ArrowDownRight className="size-4 text-destructive" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
+                  <h3 className="text-3xl font-black text-foreground tracking-tight font-sans">
                     ₹{totalSpending.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </h3>
-                  <p className="text-xs text-wise-mute mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {debitTransactions.length} expense{debitTransactions.length !== 1 ? 's' : ''} this period
                   </p>
                 </div>
               </Card>
 
               {/* Card 3: Monthly Income */}
-              <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
+              <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col justify-between h-36">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Monthly Income</span>
-                  <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
-                    <TrendingUp className="size-4 text-wise-positive" />
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Monthly Income</span>
+                  <div className="size-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                    <TrendingUp className="size-4 text-success" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-3xl font-black text-wise-ink tracking-tight font-sans">
+                  <h3 className="text-3xl font-black text-foreground tracking-tight font-sans">
                     ₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </h3>
-                  <p className="text-xs text-wise-mute mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {creditTransactions.length} income record{creditTransactions.length !== 1 ? 's' : ''} this period
                   </p>
                 </div>
               </Card>
 
               {/* Card 4: Savings Rate */}
-              <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs flex flex-col justify-between h-36">
+              <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col justify-between h-36">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-wise-mute uppercase tracking-wider">Savings Rate</span>
-                  <div className="size-8 rounded-full bg-wise-canvas-soft flex items-center justify-center text-wise-body">
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Savings Rate</span>
+                  <div className="size-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
                     <Percent className="size-4" />
                   </div>
                 </div>
                 <div>
-                  <h3 className={`text-3xl font-black tracking-tight font-sans ${savingsRate >= 0 ? 'text-wise-positive' : 'text-wise-negative'}`}>
+                  <h3 className={`text-3xl font-black tracking-tight font-sans ${savingsRate >= 0 ? 'text-success' : 'text-destructive'}`}>
                     {savingsRate.toFixed(1)}%
                   </h3>
-                  <p className="text-xs text-wise-mute mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {savingsRate >= 20 ? 'On track — great work!' : savingsRate > 0 ? 'Room to improve' : 'No income recorded'}
                   </p>
                 </div>
@@ -465,13 +471,13 @@ export default function Dashboard() {
           <div className="lg:col-span-6 flex flex-col gap-6 md:gap-8">
             
             {/* Donut Chart Card */}
-            <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs">
+            <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-base font-bold text-wise-ink">Category Expenses</h3>
-                  <p className="text-xs text-wise-mute mt-0.5">Distribution of spending across merchant categories.</p>
+                  <h3 className="text-base font-bold text-foreground">Category Expenses</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Distribution of spending across merchant categories.</p>
                 </div>
-                <span className="text-[10px] bg-wise-canvas-soft text-wise-body font-bold uppercase px-2.5 py-0.5 rounded-full">
+                <span className="text-[10px] bg-muted text-muted-foreground font-bold uppercase px-2.5 py-0.5 rounded-full">
                   This Month
                 </span>
               </div>
@@ -500,24 +506,24 @@ export default function Dashboard() {
                       
                       {/* Inner Label for Donut Center */}
                       <div className="absolute flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-[9px] font-black text-wise-mute uppercase tracking-widest">Total Spent</span>
-                        <span className="text-xl font-black text-wise-ink mt-0.5 font-sans">
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Total Spent</span>
+                        <span className="text-xl font-black text-foreground mt-0.5 font-sans">
                           ₹{totalSpending.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                         </span>
                       </div>
                     </>
                   ) : (
-                    <div className="text-center text-xs text-wise-mute">No spending recorded.</div>
+                    <div className="text-center text-xs text-muted-foreground">No spending recorded.</div>
                   )}
                 </div>
 
                 {/* Donut Color Legends */}
                 <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-6 max-w-md animate-in fade-in duration-300">
                   {donutData.map((item, index) => (
-                    <div key={index} className="flex items-center gap-1.5 text-xs text-wise-body">
+                    <div key={index} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <span className="size-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
                       <span className="font-semibold">{item.name}</span>
-                      <span className="text-wise-mute font-mono">({item.percentage.toFixed(0)}%)</span>
+                      <span className="text-muted-foreground font-mono">({item.percentage.toFixed(0)}%)</span>
                     </div>
                   ))}
                 </div>
@@ -525,26 +531,26 @@ export default function Dashboard() {
             </Card>
 
             {/* Top Categories Table with Progress Bars */}
-            <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs">
+            <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-wise-ink">Top Spending Sectors</h3>
-                <span className="text-xs text-wise-mute font-semibold">Sorted by amount</span>
+                <h3 className="text-base font-bold text-foreground">Top Spending Sectors</h3>
+                <span className="text-xs text-muted-foreground font-semibold">Sorted by amount</span>
               </div>
 
               <div className="flex flex-col gap-4">
                 {donutData.slice(0, 5).map((cat, idx) => (
                   <div key={idx} className="flex flex-col gap-1.5 animate-in slide-in-from-bottom-2 duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
-                    <div className="flex items-center justify-between text-xs font-semibold text-wise-ink">
+                    <div className="flex items-center justify-between text-xs font-semibold text-foreground">
                       <div className="flex items-center gap-2">
                         <span className="size-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
                         <span>{cat.name}</span>
                       </div>
                       <div className="flex items-center gap-2 font-mono">
                         <span>₹{cat.value.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
-                        <span className="text-wise-mute text-[10px]">({cat.percentage.toFixed(1)}%)</span>
+                        <span className="text-muted-foreground text-[10px]">({cat.percentage.toFixed(1)}%)</span>
                       </div>
                     </div>
-                    <div className="w-full bg-wise-canvas-soft rounded-full h-2.5 overflow-hidden">
+                    <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
                       <div 
                         className="h-full rounded-full transition-all duration-500" 
                         style={{ 
@@ -556,7 +562,7 @@ export default function Dashboard() {
                   </div>
                 ))}
                 {donutData.length === 0 && (
-                  <div className="text-center py-6 text-xs text-wise-mute">
+                  <div className="text-center py-6 text-xs text-muted-foreground">
                     No category data found.
                   </div>
                 )}
@@ -567,14 +573,14 @@ export default function Dashboard() {
           {/* Right Column (40% Width - lg:col-span-4) */}
           <div className="lg:col-span-4 h-full">
             {/* Recent Activity Ledger Card */}
-            <Card className="rounded-[24px] border-none bg-white p-7 shadow-xs flex flex-col justify-between min-h-[500px]">
+            <Card className="rounded-[24px] border-none bg-card p-7 shadow-xs flex flex-col justify-between min-h-[500px]">
               <div>
                 <div className="flex items-center justify-between mb-5">
                   <div>
-                    <h3 className="text-lg font-black text-wise-ink">Recent Activity</h3>
-                    <p className="text-xs text-wise-mute mt-0.5">Your sandbox ledger activity</p>
+                    <h3 className="text-lg font-black text-foreground">Recent Activity</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Your sandbox ledger activity</p>
                   </div>
-                  <span className="text-[10px] bg-wise-canvas-soft text-wise-body font-bold uppercase px-2.5 py-1 rounded-full tracking-wider">
+                  <span className="text-[10px] bg-muted text-muted-foreground font-bold uppercase px-2.5 py-1 rounded-full tracking-wider">
                     Live Ledger
                   </span>
                 </div>
@@ -600,7 +606,7 @@ export default function Dashboard() {
                       const iconColor = CATEGORY_COLORS[tx.email.toLowerCase()] || '#868685'
                       
                       return (
-                        <div key={tx.id} className="flex items-center justify-between gap-4 py-2.5 px-2.5 rounded-2xl hover:bg-wise-canvas-soft/40 transition-colors cursor-pointer">
+                        <div key={tx.id} className="flex items-center justify-between gap-4 py-2.5 px-2.5 rounded-2xl hover:bg-muted/40 transition-colors cursor-pointer">
                           <div className="flex items-center gap-4 min-w-0">
                             {/* Category-specific icon rendering */}
                             <div 
@@ -614,16 +620,16 @@ export default function Dashboard() {
                             </div>
                             
                             <div className="min-w-0">
-                              <p className="text-sm font-bold text-wise-ink truncate">{tx.name}</p>
+                              <p className="text-sm font-bold text-foreground truncate">{tx.name}</p>
                               <div className="flex items-center gap-2.5 mt-1">
-                                <span className="text-xs text-wise-mute">{tx.date}</span>
-                                <span className="text-[10px] bg-wise-canvas-soft text-wise-body px-2 py-0.5 rounded-full font-bold uppercase shrink-0">
+                                <span className="text-xs text-muted-foreground">{tx.date}</span>
+                                <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-bold uppercase shrink-0">
                                   {tx.email}
                                 </span>
                               </div>
                             </div>
                           </div>
-                          <div className={cn("text-sm font-black shrink-0 tabular-nums", isCredit ? 'text-wise-positive' : 'text-wise-negative')}>
+                          <div className={cn("text-sm font-black shrink-0 tabular-nums", isCredit ? 'text-success' : 'text-destructive')}>
                             {isCredit ? '+' : '-'}₹{tx.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </div>
                         </div>
@@ -632,18 +638,18 @@ export default function Dashboard() {
                   )}
                   {!isTxLoading && transactions.length === 0 && (
                     <div className="flex flex-col items-center justify-center text-center py-12 px-4 gap-3 animate-in fade-in duration-300">
-                      <div className="size-16 rounded-[24px] bg-wise-canvas-soft flex items-center justify-center mb-2">
-                        <Receipt className="size-8 text-wise-mute/50" />
+                      <div className="size-16 rounded-[24px] bg-muted flex items-center justify-center mb-2">
+                        <Receipt className="size-8 text-muted-foreground/50" />
                       </div>
                       <div>
-                        <h4 className="text-base font-bold text-wise-ink">No transactions yet</h4>
-                        <p className="text-xs text-wise-mute mt-1 max-w-[240px]">
+                        <h4 className="text-base font-bold text-foreground">No transactions yet</h4>
+                        <p className="text-xs text-muted-foreground mt-1 max-w-[240px]">
                           Your recent activity will appear here once you record an expense or income.
                         </p>
                       </div>
                       <Button
                         onClick={() => setIsTxModalOpen(true)}
-                        className="bg-wise-canvas-soft text-wise-ink hover:bg-wise-ink/10 font-bold rounded-full h-10 px-5 mt-2 cursor-pointer gap-2 transition-all shadow-none"
+                        className="bg-muted text-foreground hover:bg-accent font-bold rounded-full h-10 px-5 mt-2 cursor-pointer gap-2 transition-all shadow-none"
                       >
                         <Plus className="size-3.5 shrink-0" />
                         Add First Transaction
@@ -653,11 +659,11 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="border-t border-wise-ink/5 pt-5 mt-6">
+              <div className="border-t border-border/50 pt-5 mt-6">
                 <Button 
                   variant="ghost" 
                   onClick={() => setIsTxModalOpen(true)}
-                  className="w-full text-sm font-bold text-wise-body hover:text-wise-ink flex items-center justify-center gap-1.5 cursor-pointer rounded-full h-12 hover:bg-wise-canvas-soft transition-all"
+                  className="w-full text-sm font-bold text-muted-foreground hover:text-foreground flex items-center justify-center gap-1.5 cursor-pointer rounded-full h-12 hover:bg-muted transition-all"
                 >
                   <span>Record Sandbox Transaction</span>
                   <ChevronRight className="size-4" />
@@ -669,20 +675,20 @@ export default function Dashboard() {
 
         {/* Bottom Section: Full-Width 6-Month Chart */}
         <div className="w-full">
-          <Card className="rounded-[24px] border-none bg-white p-6 shadow-xs w-full">
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs w-full">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div>
-                <h3 className="text-base font-bold text-wise-ink">Cash Flow Analysis</h3>
-                <p className="text-xs text-wise-mute mt-0.5">6-month comparison of total money in (Teal) vs money out (Red).</p>
+                <h3 className="text-base font-bold text-foreground">Cash Flow Analysis</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">6-month comparison of total money in (Teal) vs money out (Red).</p>
               </div>
               <div className="flex items-center gap-4 text-xs font-bold">
                 <div className="flex items-center gap-1.5">
-                  <span className="size-3 rounded-full bg-wise-accent-cyan" />
-                  <span className="text-wise-body">Income</span>
+                  <span className="size-3 rounded-full bg-primary" />
+                  <span className="text-muted-foreground">Income</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="size-3 rounded-full bg-wise-negative" />
-                  <span className="text-wise-body">Expenses</span>
+                  <span className="size-3 rounded-full bg-destructive" />
+                  <span className="text-muted-foreground">Expenses</span>
                 </div>
               </div>
             </div>
@@ -732,63 +738,63 @@ export default function Dashboard() {
       {/* ── Add Transaction Dialog ── */}
       {isTxModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
+          <div className="bg-card rounded-3xl w-full max-w-lg p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
             <button 
               onClick={() => setIsTxModalOpen(false)} 
               aria-label="Close modal"
-              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
             
-            <h3 className="text-2xl font-black text-wise-ink mb-1">Add Manual Transaction</h3>
-            <p className="text-sm text-wise-body mb-6">Record a cash or un-synced credit transaction manually.</p>
+            <h3 className="text-2xl font-black text-foreground mb-1">Add Manual Transaction</h3>
+            <p className="text-sm text-muted-foreground mb-6">Record a cash or un-synced credit transaction manually.</p>
             
             <form onSubmit={handleAddTransaction} className="space-y-5">
               {/* Type Toggle */}
-              <div className="flex rounded-2xl bg-wise-canvas-soft p-1 gap-1">
+              <div className="flex rounded-2xl bg-muted p-1 gap-1">
                 <button
                   type="button"
                   onClick={() => { setNewTxType('expense'); setNewTxCategory('Groceries') }}
-                  className={`flex-1 h-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${newTxType === 'expense' ? 'bg-white text-wise-negative shadow-xs' : 'text-wise-mute hover:text-wise-ink'}`}
+                  className={`flex-1 h-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${newTxType === 'expense' ? 'bg-card text-destructive shadow-xs' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   ↓ Expense
                 </button>
                 <button
                   type="button"
                   onClick={() => { setNewTxType('income'); setNewTxCategory('Salary') }}
-                  className={`flex-1 h-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${newTxType === 'income' ? 'bg-white text-wise-positive shadow-xs' : 'text-wise-mute hover:text-wise-ink'}`}
+                  className={`flex-1 h-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${newTxType === 'income' ? 'bg-card text-success shadow-xs' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   ↑ Income
                 </button>
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">{newTxType === 'income' ? 'Source / Description' : 'Merchant Name'}</label>
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{newTxType === 'income' ? 'Source / Description' : 'Merchant Name'}</label>
                 <Input 
                   placeholder={newTxType === 'income' ? 'e.g. Salary, Client Payment' : 'e.g. Whole Foods, Gas Station'} 
                   value={newTxName}
                   onChange={(e) => setNewTxName(e.target.value)}
-                  className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-wise-ink/15"
+                  className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-border"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Amount (₹)</label>
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Amount (₹)</label>
                 <Input 
                   type="number" 
                   step="0.01" 
                   placeholder="0.00" 
                   value={newTxAmount}
                   onChange={(e) => setNewTxAmount(e.target.value)}
-                  className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-wise-ink/15"
+                  className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-border"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Account</label>
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Account</label>
                 <Select value={newTxAccountId} onValueChange={setNewTxAccountId}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Account" />
@@ -803,7 +809,7 @@ export default function Dashboard() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Category</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Category</label>
                   <Select value={newTxCategory} onValueChange={setNewTxCategory}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Category" />
@@ -829,7 +835,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Method</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Method</label>
                   <Select value={newTxPaidBy} onValueChange={setNewTxPaidBy}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Method">
@@ -858,7 +864,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className={`font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs ${newTxType === 'income' ? 'bg-wise-positive text-white hover:bg-wise-positive-deep' : 'bg-primary text-wise-ink hover:bg-wise-green-hover'}`}
+                  className={`font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs ${newTxType === 'income' ? 'bg-success text-white hover:bg-success-deep' : 'bg-primary text-foreground hover:bg-primary-hover'}`}
                 >
                   {newTxType === 'income' ? 'Record Income' : 'Save Expense'}
                 </Button>
@@ -871,29 +877,34 @@ export default function Dashboard() {
       {/* ── Link Bank Account Dialog ── */}
       {isLinkModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-xl border border-wise-ink/10 relative animate-in zoom-in-95 duration-150">
+          <div className="bg-card rounded-3xl w-full max-w-lg p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
             <button 
               onClick={() => setIsLinkModalOpen(false)} 
               aria-label="Close modal"
-              className="absolute top-5 right-5 text-wise-body hover:text-wise-ink hover:bg-wise-canvas-soft p-2 rounded-full transition-colors cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
             
             <div className="flex items-center gap-2 mb-2 text-primary-foreground">
-              <Sparkles className="size-5 text-wise-ink" />
-              <h3 className="text-2xl font-black text-wise-ink">Secure Plaid Sync</h3>
+              <Sparkles className="size-5 text-foreground" />
+              <h3 className="text-2xl font-black text-foreground">Secure Plaid Sync</h3>
             </div>
-            <p className="text-sm text-wise-body mb-6">Link your checking, savings, or brokerage accounts securely using end-to-end sandbox sync.</p>
+            <p className="text-sm text-muted-foreground mb-6">Link your checking, savings, or brokerage accounts securely using end-to-end sandbox sync.</p>
             
             <form onSubmit={handleLinkBank} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Financial Institution</label>
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Financial Institution</label>
                 <Select value={linkBankName} onValueChange={setLinkBankName}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Institution" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="HDFC Bank">HDFC Bank</SelectItem>
+                      <SelectItem value="ICICI Bank">ICICI Bank</SelectItem>
+                      <SelectItem value="State Bank of India">State Bank of India</SelectItem>
+                      <SelectItem value="Axis Bank">Axis Bank</SelectItem>
+                      <SelectItem value="Kotak Mahindra Bank">Kotak Mahindra Bank</SelectItem>
                       <SelectItem value="Fidelity Investments">Fidelity Investments</SelectItem>
                       <SelectItem value="Bank of America">Bank of America</SelectItem>
                       <SelectItem value="Wells Fargo">Wells Fargo</SelectItem>
@@ -904,20 +915,20 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-wise-body uppercase tracking-wider">Estimated Balance (₹)</label>
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Estimated Balance (₹)</label>
                 <Input 
                   type="number" 
                   placeholder="5000.00" 
                   value={linkBankBalance}
                   onChange={(e) => setLinkBankBalance(e.target.value)}
-                  className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-wise-ink/15"
+                  className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-border"
                   required
                 />
               </div>
 
-              <div className="bg-wise-canvas-soft p-4 rounded-2xl border border-wise-ink/5 space-y-1">
-                <span className="text-[11px] font-bold text-wise-body uppercase block tracking-wider">Sandbox Mode Notice</span>
-                <p className="text-xs text-wise-mute leading-relaxed">
+              <div className="bg-muted p-4 rounded-2xl border border-border/50 space-y-1">
+                <span className="text-[11px] font-bold text-muted-foreground uppercase block tracking-wider">Sandbox Mode Notice</span>
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   No real bank credentials will be stored. Simply click sync below to instantly import mock records for sandbox testing.
                 </p>
               </div>
@@ -933,7 +944,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-primary text-wise-ink hover:bg-wise-green-hover font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs"
+                  className="bg-primary text-foreground hover:bg-primary-hover font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs"
                 >
                   Sync & Link Account
                 </Button>

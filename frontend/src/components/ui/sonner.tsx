@@ -20,10 +20,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
         },
         classNames: {
           toast: "group/toast",
-          title: "font-bold text-[13px] text-wise-ink",
-          description: "text-wise-body text-xs mt-0.5",
+          title: "font-bold text-[13px] text-foreground",
+          description: "text-muted-foreground text-xs mt-0.5",
           closeButton:
-            "!bg-wise-canvas-soft !border-wise-ink/10 !text-wise-mute hover:!text-wise-ink hover:!bg-wise-canvas rounded-full cursor-pointer",
+            "!bg-muted !border-border !text-muted-foreground hover:!text-foreground hover:!bg-background rounded-full cursor-pointer",
           success:
             "!border-l-4 !border-l-[#2ead4b]",
           error:
