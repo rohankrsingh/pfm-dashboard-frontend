@@ -2,22 +2,18 @@ import { client } from './client.js';
 
 export const budgetApi = {
   getBudgets: async (month) => {
-    const { data } = await client.get(`/budgets?month=${month}`);
-    return data;
+    return client.get(`/budgets?month=${month}`);
   },
 
   createBudget: async (budgetData) => {
-    const { data } = await client.post('/budgets', budgetData);
-    return data;
+    return client.post('/budgets', budgetData);
   },
 
   updateBudget: async (id, budgetData) => {
-    const { data } = await client.put(`/budgets/${id}`, budgetData);
-    return data;
+    return client.put(`/budgets/${id}`, budgetData);
   },
 
   deleteBudget: async (id) => {
-    const { data } = await client.delete(`/budgets/${id}`);
-    return data;
+    return client.delete(`/budgets/${id}`);
   }
 };

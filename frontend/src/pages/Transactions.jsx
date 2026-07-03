@@ -24,7 +24,8 @@ import {
   MoreHorizontalIcon,
   CalendarIcon,
   Receipt,
-  ListFilter
+  ListFilter,
+  Edit2
 } from 'lucide-react'
 
 import { Button }   from '@/components/ui/button'
@@ -136,6 +137,7 @@ export default function Transactions() {
   const [addDateOpen,  setAddDateOpen]  = useState(false)
   const [addNotes,     setAddNotes]     = useState('')
   const [isSaving,     setIsSaving]     = useState(false)
+  const [editTarget,   setEditTarget]   = useState(null)
 
   // date range filter
   const [dateRange,     setDateRange]     = useState({ from: undefined, to: undefined })
@@ -204,12 +206,24 @@ export default function Transactions() {
   const netFlow      = totalIncome - totalExpense
 
   // ── handlers ─────────────────────────────────────────────────────────────
+  const startEdit = (tx) => {
+    setEditTarget(tx)
+    setAddDesc(tx.description)
+    setAddAmount(tx.amount.toString())
+    setAddCat(tx.category)
+    setAddType(tx.type)
+    setAddAccId(tx.accountId?._id || tx.accountId || '')
+    setAddDate(new Date(tx.date))
+    setAddNotes(tx.notes || '')
+    setIsAddOpen(true)
+  }
+
   const handleAdd = async (e) => {
     e.preventDefault()
     if (!addDesc || !addAmount || !addAccId) return
     setIsSaving(true)
     try {
-      await api.createTransaction({
+      const payload = {
         description: addDesc,
         amount: parseFloat(addAmount),
         type: addType,
@@ -217,12 +231,21 @@ export default function Transactions() {
         accountId: addAccId,
         date: new Date(addDate),
         notes: addNotes
-      })
+      }
+
+      if (editTarget) {
+        await api.updateTransaction(editTarget._id, payload)
+        toast.success('Transaction updated successfully.')
+      } else {
+        await api.createTransaction(payload)
+        toast.success('Transaction saved successfully.')
+      }
+
       setIsAddOpen(false)
+      setEditTarget(null)
       setAddDesc(''); setAddAmount(''); setAddNotes('')
       setAddCat('food'); setAddType('expense')
       setAddDate(new Date())
-      toast.success('Transaction saved successfully.')
       await Promise.all([fetchTransactions(), fetchLayoutData()])
     } catch (err) {
       toast.error(err.message || 'Failed to save transaction')
@@ -617,6 +640,13 @@ export default function Transactions() {
                               >
                                 Copy ID
                               </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-xs font-semibold cursor-pointer"
+                                onSelect={() => startEdit(tx)}
+                              >
+                                <Edit2 className="size-3.5 mr-1.5" />
+                                Edit
+                              </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
                                 variant="destructive"
@@ -702,14 +732,24 @@ export default function Transactions() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
           <div className="bg-card rounded-3xl w-full max-w-lg p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
             <button
-              onClick={() => setIsAddOpen(false)}
+              onClick={() => {
+                setIsAddOpen(false)
+                setEditTarget(null)
+                setAddDesc(''); setAddAmount(''); setAddNotes('')
+                setAddCat('food'); setAddType('expense')
+                setAddDate(new Date())
+              }}
               className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
 
-            <h3 className="text-2xl font-black text-foreground mb-1">Record Transaction</h3>
-            <p className="text-sm text-muted-foreground mb-6">Log a manual transaction to your ledger.</p>
+            <h3 className="text-2xl font-black text-foreground mb-1">
+              {editTarget ? 'Edit Transaction' : 'Record Transaction'}
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              {editTarget ? 'Modify the details of this transaction.' : 'Log a manual transaction to your ledger.'}
+            </p>
 
             <form onSubmit={handleAdd} className="space-y-4">
               <div className="space-y-1.5">
@@ -815,7 +855,13 @@ export default function Transactions() {
               </div>
 
               <div className="pt-3 flex justify-end gap-3">
-                <Button type="button" variant="ghost" onClick={() => setIsAddOpen(false)}
+                <Button type="button" variant="ghost" onClick={() => {
+                  setIsAddOpen(false)
+                  setEditTarget(null)
+                  setAddDesc(''); setAddAmount(''); setAddNotes('')
+                  setAddCat('food'); setAddType('expense')
+                  setAddDate(new Date())
+                }}
                   className="rounded-full h-12 px-6 font-bold text-sm cursor-pointer">
                   Cancel
                 </Button>

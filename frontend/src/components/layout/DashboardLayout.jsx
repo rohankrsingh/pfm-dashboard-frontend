@@ -242,6 +242,20 @@ export default function DashboardLayout() {
                   </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton
+                      render={<Link to="/budgets" />}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
+                        location.pathname === "/budgets"
+                          ? "bg-primary text-foreground shadow-sm"
+                          : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <Target className="size-4 shrink-0" />
+                      <span>Budgets & Goals</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
                       render={<Link to="/settings" />}
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",

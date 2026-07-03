@@ -5,6 +5,10 @@ export const dashboardService = {
     return client.get('/dashboard/summary');
   },
 
+  getCashFlowHistory: async () => {
+    return client.get('/dashboard/history');
+  },
+
   getMonthlyStats: async (month) => {
     return client.get(`/dashboard/stats/${month}`);
   }

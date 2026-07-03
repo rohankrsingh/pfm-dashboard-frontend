@@ -157,14 +157,14 @@ export default function Accounts() {
 
   // ── Calculations ──
   const totalNetWorth = accounts.reduce((acc, curr) => {
-    if (curr.type === 'credit') {
+    if (curr.type === 'credit_card') {
       return acc - curr.balance
     }
     return acc + curr.balance
   }, 0)
 
   const checkingSavingsAccounts = accounts.filter(acc => acc.type === 'checking' || acc.type === 'savings')
-  const creditCardAccounts = accounts.filter(acc => acc.type === 'credit')
+  const creditCardAccounts = accounts.filter(acc => acc.type === 'credit_card')
   const investmentAccounts = accounts.filter(acc => acc.type === 'investment')
 
   const getSyncTimeDescription = (updatedAt) => {

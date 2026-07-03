@@ -19,7 +19,9 @@ import {
   Briefcase,
   Laptop,
   Wallet,
-  Receipt
+  Receipt,
+  Zap,
+  CreditCard
 } from 'lucide-react'
 
 import {
@@ -32,14 +34,21 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts'
-
-import { Badge } from '@/components/reui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Label } from '@/components/ui/label'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/reui/badge'
 import {
   Select,
   SelectContent,
@@ -47,37 +56,57 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from "@/lib/utils"
 
 const CATEGORY_COLORS = {
   'groceries': '#ffc091',      // Wise Accent Orange
+  'food': '#ffc091',           // Wise Accent Orange
   'transport': '#38c8ff',      // Wise Accent Cyan
+  'transportation': '#38c8ff', // Wise Accent Cyan
   'entertainment': '#ffd11a',  // Wise Warning Yellow
   'investments': '#9fe870',    // Wise Green Brand CTA
+  'other': '#9fe870',          // Wise Green Brand CTA
   'salary': '#2ead4b',         // Positive Green
   'freelance': '#c5edab',      // Wise Green Neutral
+  'utilities': '#c5edab',      // Wise Green Neutral
+  'loan_payments': '#ff8080',  // Soft Red
 }
 
 const CATEGORY_ICONS = {
   'groceries': ShoppingCart,
+  'food': ShoppingCart,
   'transport': Car,
+  'transportation': Car,
   'entertainment': Tv,
   'investments': TrendingUp,
+  'other': TrendingUp,
   'salary': Briefcase,
   'freelance': Laptop,
+  'utilities': Zap,
+  'loan_payments': CreditCard,
 }
 
 export default function Dashboard() {
   const { userProfile, accounts, fetchLayoutData } = useOutletContext()
-  
+
   // ── States ──
   const [transactions, setTransactions] = useState([])
   const [isTxLoading, setIsTxLoading] = useState(true)
+  const [summary, setSummary] = useState({
+    totalBalance: 0,
+    accountCount: 0,
+    monthlyIncome: 0,
+    monthlyExpenses: 0,
+    monthlyNet: 0,
+    expenseByCategory: {}
+  })
+  const [monthlyHistoryData, setMonthlyHistoryData] = useState([])
 
   // Modals state
   const [isTxModalOpen, setIsTxModalOpen] = useState(false)
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
-  
+
   // Form values
   const [newTxName, setNewTxName] = useState('')
   const [newTxAmount, setNewTxAmount] = useState('')
@@ -92,13 +121,13 @@ export default function Dashboard() {
   const mappedAccounts = accounts.map(acc => ({
     id: acc._id,
     platform: acc.name,
-    technologies: acc.type === 'checking' ? 'Checking Account' : 
-                  acc.type === 'savings' ? 'Savings Account' :
-                  acc.type === 'investment' ? 'Investment Portfolio' : 'Credit Card',
+    technologies: acc.type === 'checking' ? 'Checking Account' :
+      acc.type === 'savings' ? 'Savings Account' :
+        acc.type === 'investment' ? 'Investment Portfolio' : 'Credit Card',
     earnings: `₹${acc.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
     rawBalance: acc.balance,
     progressPercentage: 50,
-    img: acc.type === 'investment' 
+    img: acc.type === 'investment'
       ? 'https://cdn.shadcnstudio.com/ss-assets/blocks/dashboard-application/widgets/bitbank.png'
       : 'https://cdn.shadcnstudio.com/ss-assets/blocks/dashboard-application/widgets/zipcar.png'
   }))
@@ -112,7 +141,13 @@ export default function Dashboard() {
   const fetchDashboardSummary = async () => {
     try {
       setIsTxLoading(true)
-      const summaryData = await api.getDashboardSummary()
+      const [summaryData, historyData] = await Promise.all([
+        api.getDashboardSummary(),
+        api.getCashFlowHistory()
+      ])
+      setSummary(summaryData.summary)
+      setMonthlyHistoryData(historyData.history)
+
       const txsData = summaryData.summary.recentTransactions || []
       const mappedTransactions = txsData.map(tx => {
         const initials = tx.description
@@ -123,10 +158,10 @@ export default function Dashboard() {
           .substring(0, 2)
 
         const catDisplay = tx.category === 'food' ? 'Groceries' :
-                           tx.category === 'transportation' ? 'Transport' :
-                           tx.category === 'entertainment' ? 'Entertainment' :
-                           tx.category === 'salary' ? 'Salary' :
-                           tx.category === 'other' ? 'Investments' : 'Freelance'
+          tx.category === 'transportation' ? 'Transport' :
+            tx.category === 'entertainment' ? 'Entertainment' :
+              tx.category === 'salary' ? 'Salary' :
+                tx.category === 'other' ? 'Investments' : 'Freelance'
 
         return {
           id: tx._id,
@@ -144,6 +179,7 @@ export default function Dashboard() {
       setTransactions(mappedTransactions)
     } catch (err) {
       console.error('Failed to load transactions summary:', err)
+      toast.error('Failed to load dashboard data: ' + err.message)
     } finally {
       setIsTxLoading(false)
     }
@@ -212,7 +248,7 @@ export default function Dashboard() {
       if (linkBankName.includes('Fidelity') || linkBankName.includes('Coinbase')) {
         type = 'investment'
       }
-      
+
       const colors = {
         'Fidelity Investments': '#10B981',
         'Bank of America': '#EF4444',
@@ -289,16 +325,17 @@ export default function Dashboard() {
   }
 
   // ── Dynamic Financial Calculations ──
-  
-  // 1. Total Balance
-  const totalBalance = mappedAccounts.reduce((acc, curr) => acc + curr.rawBalance, 0)
-  
-  // 2. Spending (Debits) and Income (Credits)
+
+  // 1. Total Net Worth, Spending, and Income
+  const totalBalance = accounts.reduce((sum, acc) => {
+    if (acc.type === 'credit_card') return sum - acc.balance
+    return sum + acc.balance
+  }, 0)
+  const totalSpending = summary.monthlyExpenses
+  const totalIncome = summary.monthlyIncome
+
   const debitTransactions = transactions.filter(t => t.type === 'debit')
   const creditTransactions = transactions.filter(t => t.type === 'credit')
-  
-  const totalSpending = debitTransactions.reduce((acc, curr) => acc + curr.amount, 0)
-  const totalIncome = creditTransactions.reduce((acc, curr) => acc + curr.amount, 0)
 
   // 3. Savings Rate: (Income - Expenses) / Income * 100
   const savingsRate = totalIncome > 0 ? ((totalIncome - totalSpending) / totalIncome) * 100 : 0
@@ -317,33 +354,31 @@ export default function Dashboard() {
   const savingsRateTrend = savingsRate - lastMonthSavingsRate
 
   // ── Donut Chart Categorization ──
-  const categorySpendingMap = debitTransactions.reduce((acc, t) => {
-    const cat = t.email || 'Other'
-    acc[cat] = (acc[cat] || 0) + t.amount
-    return acc
-  }, {})
+  const donutData = Object.entries(summary.expenseByCategory || {}).map(([name, value]) => {
+    const displayNames = {
+      food: 'Groceries',
+      transportation: 'Transport',
+      entertainment: 'Entertainment',
+      salary: 'Salary',
+      utilities: 'Utilities',
+      healthcare: 'Healthcare',
+      shopping: 'Shopping',
+      other: 'Investments'
+    }
+    const displayName = displayNames[name.toLowerCase()] || name
+    return {
+      name: displayName,
+      value,
+      percentage: totalSpending > 0 ? (value / totalSpending) * 100 : 0,
+      color: CATEGORY_COLORS[name.toLowerCase()] || '#868685'
+    }
+  }).sort((a, b) => b.value - a.value)
 
-  const donutData = Object.entries(categorySpendingMap).map(([name, value]) => ({
-    name,
-    value,
-    percentage: totalSpending > 0 ? (value / totalSpending) * 100 : 0,
-    color: CATEGORY_COLORS[name.toLowerCase()] || '#868685'
-  })).sort((a, b) => b.value - a.value)
-
-  // ── Monthly Historical Data (Income vs Expenses) ──
-  const monthlyHistoryData = [
-    { month: 'Jan', income: 4800, expenses: 3200 },
-    { month: 'Feb', income: 5100, expenses: 3800 },
-    { month: 'Mar', income: 4900, expenses: 3100 },
-    { month: 'Apr', income: 5300, expenses: 4200 },
-    { month: 'May', income: 5200, expenses: 3900 },
-    { month: 'Jun', income: totalIncome, expenses: totalSpending }
-  ]
 
   return (
     <>
       <main className="p-6 md:p-8 flex flex-col gap-6 md:gap-8 max-w-7xl w-full mx-auto animate-in fade-in duration-300">
-        
+
         {/* Welcome Greeting Row */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -355,14 +390,14 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button 
+            <Button
               onClick={() => setIsTxModalOpen(true)}
               className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
             >
               <Plus className="size-4 shrink-0" />
               Add Transaction
             </Button>
-            <Button 
+            <Button
               onClick={() => setIsLinkModalOpen(true)}
               className="bg-primary text-foreground hover:bg-primary-hover font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
             >
@@ -466,10 +501,10 @@ export default function Dashboard() {
 
         {/* Main Workspace Grid: 60/40 Split */}
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 md:gap-8 items-start">
-          
+
           {/* Left Column (60% Width - lg:col-span-6) */}
           <div className="lg:col-span-6 flex flex-col gap-6 md:gap-8">
-            
+
             {/* Donut Chart Card */}
             <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs">
               <div className="flex items-center justify-between mb-4">
@@ -498,12 +533,12 @@ export default function Dashboard() {
                           dataKey="value"
                         >
                           {donutData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
                         <Tooltip content={<CustomDonutTooltip />} />
                       </PieChart>
-                      
+
                       {/* Inner Label for Donut Center */}
                       <div className="absolute flex flex-col items-center justify-center pointer-events-none">
                         <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Total Spent</span>
@@ -551,12 +586,12 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
-                      <div 
-                        className="h-full rounded-full transition-all duration-500" 
-                        style={{ 
-                          width: `${cat.percentage}%`, 
-                          backgroundColor: cat.color 
-                        }} 
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${cat.percentage}%`,
+                          backgroundColor: cat.color
+                        }}
                       />
                     </div>
                   </div>
@@ -604,21 +639,21 @@ export default function Dashboard() {
                       const isCredit = tx.type === 'credit'
                       const IconComponent = CATEGORY_ICONS[tx.email.toLowerCase()] || Wallet
                       const iconColor = CATEGORY_COLORS[tx.email.toLowerCase()] || '#868685'
-                      
+
                       return (
                         <div key={tx.id} className="flex items-center justify-between gap-4 py-2.5 px-2.5 rounded-2xl hover:bg-muted/40 transition-colors cursor-pointer">
                           <div className="flex items-center gap-4 min-w-0">
                             {/* Category-specific icon rendering */}
-                            <div 
-                              className="size-11 rounded-full flex items-center justify-center shrink-0 transition-transform" 
-                              style={{ 
-                                backgroundColor: `${iconColor}12`, 
-                                color: iconColor 
+                            <div
+                              className="size-11 rounded-full flex items-center justify-center shrink-0 transition-transform"
+                              style={{
+                                backgroundColor: `${iconColor}12`,
+                                color: iconColor
                               }}
                             >
                               <IconComponent className="size-5.5 shrink-0" />
                             </div>
-                            
+
                             <div className="min-w-0">
                               <p className="text-sm font-bold text-foreground truncate">{tx.name}</p>
                               <div className="flex items-center gap-2.5 mt-1">
@@ -660,8 +695,8 @@ export default function Dashboard() {
               </div>
 
               <div className="border-t border-border/50 pt-5 mt-6">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   onClick={() => setIsTxModalOpen(true)}
                   className="w-full text-sm font-bold text-muted-foreground hover:text-foreground flex items-center justify-center gap-1.5 cursor-pointer rounded-full h-12 hover:bg-muted transition-all"
                 >
@@ -692,39 +727,39 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            
+
             {/* Bar Chart View */}
-            <div className="w-full min-h-[320px]" style={{ height: 320 }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="w-full h-[320px]">
+              <ResponsiveContainer width="100%" height={320}>
                 <BarChart
                   data={monthlyHistoryData}
                   margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
                   barGap={6}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(14, 15, 12, 0.06)" />
-                  <XAxis 
-                    dataKey="month" 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey="month"
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fill: '#868685', fontSize: 11, fontWeight: 600 }}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
                     tickFormatter={(val) => `₹${val}`}
                     tick={{ fill: '#868685', fontSize: 10, fontFamily: 'monospace' }}
                   />
                   <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'rgba(14, 15, 12, 0.02)' }} />
-                  <Bar 
-                    dataKey="income" 
+                  <Bar
+                    dataKey="income"
                     fill="#38c8ff" // Wise Accent Cyan
-                    radius={[4, 4, 0, 0]} 
+                    radius={[4, 4, 0, 0]}
                     maxBarSize={28}
                   />
-                  <Bar 
-                    dataKey="expenses" 
+                  <Bar
+                    dataKey="expenses"
                     fill="#d03238" // Wise Negative Red
-                    radius={[4, 4, 0, 0]} 
+                    radius={[4, 4, 0, 0]}
                     maxBarSize={28}
                   />
                 </BarChart>
@@ -732,24 +767,24 @@ export default function Dashboard() {
             </div>
           </Card>
         </div>
-        
+
       </main>
 
       {/* ── Add Transaction Dialog ── */}
       {isTxModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
           <div className="bg-card rounded-3xl w-full max-w-lg p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
-            <button 
-              onClick={() => setIsTxModalOpen(false)} 
+            <button
+              onClick={() => setIsTxModalOpen(false)}
               aria-label="Close modal"
               className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
-            
+
             <h3 className="text-2xl font-black text-foreground mb-1">Add Manual Transaction</h3>
             <p className="text-sm text-muted-foreground mb-6">Record a cash or un-synced credit transaction manually.</p>
-            
+
             <form onSubmit={handleAddTransaction} className="space-y-5">
               {/* Type Toggle */}
               <div className="flex rounded-2xl bg-muted p-1 gap-1">
@@ -771,8 +806,8 @@ export default function Dashboard() {
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{newTxType === 'income' ? 'Source / Description' : 'Merchant Name'}</label>
-                <Input 
-                  placeholder={newTxType === 'income' ? 'e.g. Salary, Client Payment' : 'e.g. Whole Foods, Gas Station'} 
+                <Input
+                  placeholder={newTxType === 'income' ? 'e.g. Salary, Client Payment' : 'e.g. Whole Foods, Gas Station'}
                   value={newTxName}
                   onChange={(e) => setNewTxName(e.target.value)}
                   className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-border"
@@ -782,10 +817,10 @@ export default function Dashboard() {
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Amount (₹)</label>
-                <Input 
-                  type="number" 
-                  step="0.01" 
-                  placeholder="0.00" 
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
                   value={newTxAmount}
                   onChange={(e) => setNewTxAmount(e.target.value)}
                   className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-border"
@@ -854,16 +889,16 @@ export default function Dashboard() {
               </div>
 
               <div className="pt-4 flex justify-end gap-3">
-                <Button 
-                  type="button" 
-                  variant="ghost" 
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={() => setIsTxModalOpen(false)}
                   className="rounded-full h-12 px-6 cursor-pointer font-bold transition-all text-sm"
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className={`font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs ${newTxType === 'income' ? 'bg-success text-white hover:bg-success-deep' : 'bg-primary text-foreground hover:bg-primary-hover'}`}
                 >
                   {newTxType === 'income' ? 'Record Income' : 'Save Expense'}
@@ -878,47 +913,47 @@ export default function Dashboard() {
       {isLinkModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
           <div className="bg-card rounded-3xl w-full max-w-lg p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
-            <button 
-              onClick={() => setIsLinkModalOpen(false)} 
+            <button
+              onClick={() => setIsLinkModalOpen(false)}
               aria-label="Close modal"
               className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
-            
+
             <div className="flex items-center gap-2 mb-2 text-primary-foreground">
               <Sparkles className="size-5 text-foreground" />
               <h3 className="text-2xl font-black text-foreground">Secure Plaid Sync</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-6">Link your checking, savings, or brokerage accounts securely using end-to-end sandbox sync.</p>
-            
+
             <form onSubmit={handleLinkBank} className="space-y-5">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Financial Institution</label>
                 <Select value={linkBankName} onValueChange={setLinkBankName}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Institution" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="HDFC Bank">HDFC Bank</SelectItem>
-                      <SelectItem value="ICICI Bank">ICICI Bank</SelectItem>
-                      <SelectItem value="State Bank of India">State Bank of India</SelectItem>
-                      <SelectItem value="Axis Bank">Axis Bank</SelectItem>
-                      <SelectItem value="Kotak Mahindra Bank">Kotak Mahindra Bank</SelectItem>
-                      <SelectItem value="Fidelity Investments">Fidelity Investments</SelectItem>
-                      <SelectItem value="Bank of America">Bank of America</SelectItem>
-                      <SelectItem value="Wells Fargo">Wells Fargo</SelectItem>
-                      <SelectItem value="Citibank Checking">Citibank Checking</SelectItem>
-                      <SelectItem value="Coinbase Crypto">Coinbase Crypto</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Institution" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="HDFC Bank">HDFC Bank</SelectItem>
+                    <SelectItem value="ICICI Bank">ICICI Bank</SelectItem>
+                    <SelectItem value="State Bank of India">State Bank of India</SelectItem>
+                    <SelectItem value="Axis Bank">Axis Bank</SelectItem>
+                    <SelectItem value="Kotak Mahindra Bank">Kotak Mahindra Bank</SelectItem>
+                    <SelectItem value="Fidelity Investments">Fidelity Investments</SelectItem>
+                    <SelectItem value="Bank of America">Bank of America</SelectItem>
+                    <SelectItem value="Wells Fargo">Wells Fargo</SelectItem>
+                    <SelectItem value="Citibank Checking">Citibank Checking</SelectItem>
+                    <SelectItem value="Coinbase Crypto">Coinbase Crypto</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Estimated Balance (₹)</label>
-                <Input 
-                  type="number" 
-                  placeholder="5000.00" 
+                <Input
+                  type="number"
+                  placeholder="5000.00"
                   value={linkBankBalance}
                   onChange={(e) => setLinkBankBalance(e.target.value)}
                   className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-border"
@@ -934,16 +969,16 @@ export default function Dashboard() {
               </div>
 
               <div className="pt-4 flex justify-end gap-3">
-                <Button 
-                  type="button" 
-                  variant="ghost" 
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={() => setIsLinkModalOpen(false)}
                   className="rounded-full h-12 px-6 cursor-pointer font-bold transition-all text-sm"
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="bg-primary text-foreground hover:bg-primary-hover font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs"
                 >
                   Sync & Link Account

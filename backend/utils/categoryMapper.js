@@ -12,7 +12,7 @@ export function mapPlaidCategory(plaidCategory) {
   if (cat.includes('food') || cat.includes('drink') || cat.includes('restaurant') || cat.includes('grocery')) {
     return 'food';
   }
-  if (cat.includes('utilities') || cat.includes('rent') || cat.includes('bills') || cat.includes('rent_and_utilities')) {
+  if (cat.includes('utilities') || cat.includes('rent') || cat.includes('bill') || cat.includes('rent_and_utilities')) {
     return 'utilities';
   }
   if (cat.includes('transport') || cat.includes('gas') || cat.includes('taxi') || cat.includes('automotive') || cat.includes('transportation')) {

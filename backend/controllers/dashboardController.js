@@ -1,5 +1,6 @@
 import Transaction from '../models/Transaction.js';
 import Account from '../models/Account.js';
+import mongoose from 'mongoose';
 
 export const getDashboardSummary = async (req, res) => {
   try {
@@ -8,7 +9,24 @@ export const getDashboardSummary = async (req, res) => {
     const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
 
     // Get transactions for current month
-    const now = new Date();
+    let now = new Date();
+
+    // If current calendar month has no transactions, fall back to the month of the most recent transaction
+    const hasTransactionsThisMonth = await Transaction.exists({
+      userId: req.user.id,
+      date: {
+        $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+        $lte: new Date(now.getFullYear(), now.getMonth() + 1, 0)
+      }
+    });
+
+    if (!hasTransactionsThisMonth) {
+      const mostRecentTx = await Transaction.findOne({ userId: req.user.id }).sort({ date: -1 });
+      if (mostRecentTx) {
+        now = new Date(mostRecentTx.date);
+      }
+    }
+
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
@@ -100,6 +118,58 @@ export const getMonthlyStats = async (req, res) => {
         byCategory
       }
     });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getCashFlowHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Calculate range for last 6 months
+    const now = new Date();
+    const startOfRange = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+    const stats = await Transaction.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          date: { $gte: startOfRange }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$date' },
+            month: { $month: '$date' },
+            type: '$type'
+          },
+          total: { $sum: '$amount' }
+        }
+      }
+    ]);
+
+    // Format output as array of last 6 months
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const history = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const mNum = d.getMonth() + 1;
+      const yNum = d.getFullYear();
+
+      const incomeStat = stats.find(s => s._id.year === yNum && s._id.month === mNum && s._id.type === 'income');
+      const expenseStat = stats.find(s => s._id.year === yNum && s._id.month === mNum && s._id.type === 'expense');
+
+      history.push({
+        month: months[d.getMonth()],
+        income: incomeStat ? incomeStat.total : 0,
+        expenses: expenseStat ? expenseStat.total : 0
+      });
+    }
+
+    res.status(200).json({ success: true, history });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
