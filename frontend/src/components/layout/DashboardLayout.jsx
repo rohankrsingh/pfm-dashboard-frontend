@@ -54,13 +54,7 @@ import { Badge } from '@/components/reui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { cn } from "@/lib/utils"
-
-const statuses = [
-  { value: "available", label: "Available", color: "bg-primary" },
-  { value: "away", label: "Away", color: "bg-muted-foreground" },
-  { value: "busy", label: "Busy", color: "bg-destructive" },
-  { value: "offline", label: "Offline", color: "bg-secondary" },
-]
+import { useTheme } from '@/components/common/ThemeProvider'
 
 export default function DashboardLayout() {
   const navigate = useNavigate()
@@ -72,8 +66,8 @@ export default function DashboardLayout() {
     currency: 'INR'
   })
   const [accounts, setAccounts] = useState([])
-  const [status, setStatus] = useState("available")
-  const [theme, setTheme] = useState("light")
+
+  const { theme, setTheme } = useTheme()
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -116,25 +110,12 @@ export default function DashboardLayout() {
     fetchLayoutData()
   }, [])
 
-  useEffect(() => {
-    const root = window.document.documentElement
-    root.classList.remove('light', 'dark')
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      root.classList.add(systemTheme)
-      return
-    }
-
-    root.classList.add(theme)
-  }, [theme])
-
   const handleLogout = () => {
     api.logout()
     navigate('/')
   }
 
-  const activeStatus = statuses.find((s) => s.value === status) || statuses[0]
+
   const pageName = location.pathname.startsWith('/accounts')
     ? 'Accounts'
     : location.pathname.startsWith('/transactions')
@@ -169,7 +150,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className='flex min-h-dvh w-full text-foreground bg-muted font-sans'>
+    <div className='flex min-h-dvh w-full text-foreground bg-background font-sans pb-16 md:pb-0'>
       <SidebarProvider>
         {/* Sidebar Layout */}
         <Sidebar className="border-r border-border bg-card">
@@ -277,9 +258,11 @@ export default function DashboardLayout() {
         {/* Dashboard Main View */}
         <div className='flex flex-1 flex-col overflow-x-hidden min-h-screen'>
           {/* Header */}
-          <header className='bg-card h-16 border-b border-border flex items-center justify-between px-6 sticky top-0 z-40 backdrop-blur-md bg-card/95'>
+          <header className='bg-background h-16 border-b border-border flex items-center justify-between px-6 sticky top-0 z-40 backdrop-blur-md bg-background/95'>
             <div className='flex items-center gap-4'>
-              <SidebarTrigger className='[&_svg]:size-5! hover:bg-muted p-2 rounded-xl transition-colors cursor-pointer' />
+              <div className="hidden md:block">
+                <SidebarTrigger className='[&_svg]:size-5! hover:bg-muted p-2 rounded-xl transition-colors cursor-pointer' />
+              </div>
               <Separator orientation='vertical' className='hidden h-4! sm:block bg-primary/15' />
               <Breadcrumb className='hidden sm:block'>
                 <BreadcrumbList>
@@ -360,49 +343,8 @@ export default function DashboardLayout() {
                         {accounts.length}
                       </Badge>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onSelect={(e) => e.preventDefault()}
-                    >
-                      <span className="flex items-center gap-2">
-                        <PhoneIcon className="size-4" aria-hidden="true" />
-                        Linked Wallet
-                      </span>
-                      <Badge variant="secondary" size="sm" className="ml-auto">
-                        1
-                      </Badge>
-                    </DropdownMenuItem>
+                    {/* Hide Linked Wallet since we don't have that feature built yet */}
                   </DropdownMenuGroup>
-                  
-                  {/* Status sub menu */}
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <span className="flex items-center gap-2">
-                        <span
-                          className={cn(
-                            "rounded-full size-2",
-                            activeStatus.color
-                          )}
-                        />
-                        {activeStatus.label}
-                      </span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent side="left">
-                      {statuses.map((s) => (
-                        <DropdownMenuItem
-                          key={s.value}
-                          onClick={() => setStatus(s.value)}
-                        >
-                          <span className="flex items-center gap-2">
-                            <span className={`size-2 rounded-full ${s.color}`} />
-                            {s.label}
-                          </span>
-                          {status === s.value && (
-                            <CheckIcon className="text-muted-foreground size-3.5" aria-hidden="true" />
-                          )}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
                   
                   <DropdownMenuSeparator className="bg-primary/5" />
                   
@@ -414,7 +356,10 @@ export default function DashboardLayout() {
                       <SettingsIcon className="size-4" aria-hidden="true" />
                       Settings
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() => toast.success("Help center coming soon")}
+                      className="cursor-pointer"
+                    >
                       <LifeBuoyIcon className="size-4" aria-hidden="true" />
                       Help Center
                     </DropdownMenuItem>
@@ -435,9 +380,53 @@ export default function DashboardLayout() {
           </header>
 
           {/* Render nested routes */}
-          <Outlet context={{ userProfile, accounts, setAccounts, fetchLayoutData, status, setStatus, theme, setTheme }} />
+          <Outlet context={{ userProfile, accounts, setAccounts, fetchLayoutData, theme, setTheme }} />
         </div>
       </SidebarProvider>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 w-full bg-background border-t border-border flex items-center justify-around h-16 z-50 px-2 pb-safe">
+        <Link 
+          to="/dashboard" 
+          className={cn(
+            "flex flex-col items-center justify-center w-full h-full gap-1 text-[10px] font-medium transition-colors",
+            location.pathname === "/dashboard" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <LayoutDashboard className="size-5" />
+          <span>Home</span>
+        </Link>
+        <Link 
+          to="/accounts" 
+          className={cn(
+            "flex flex-col items-center justify-center w-full h-full gap-1 text-[10px] font-medium transition-colors",
+            location.pathname === "/accounts" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <BuildingIcon className="size-5" />
+          <span>Accounts</span>
+        </Link>
+        <Link 
+          to="/transactions" 
+          className={cn(
+            "flex flex-col items-center justify-center w-full h-full gap-1 text-[10px] font-medium transition-colors",
+            location.pathname === "/transactions" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Receipt className="size-5" />
+          <span>Activity</span>
+        </Link>
+        <Link 
+          to="/budgets" 
+          className={cn(
+            "flex flex-col items-center justify-center w-full h-full gap-1 text-[10px] font-medium transition-colors",
+            location.pathname === "/budgets" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Target className="size-5" />
+          <span>Budgets</span>
+        </Link>
+      </nav>
     </div>
   )
 }

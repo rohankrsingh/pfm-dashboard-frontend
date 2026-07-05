@@ -201,8 +201,8 @@ export default function Transactions() {
   useEffect(() => { setPage(1) }, [search, filterType, filterCat, filterAcc, sortBy, dateRange])
 
   // ── summary stats ─────────────────────────────────────────────────────────
-  const totalIncome  = allTransactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-  const totalExpense = allTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+  const totalIncome  = filtered.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+  const totalExpense = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
   const netFlow      = totalIncome - totalExpense
 
   // ── handlers ─────────────────────────────────────────────────────────────
@@ -836,7 +836,13 @@ export default function Transactions() {
                         mode="single"
                         selected={addDate}
                         onSelect={(d) => {
-                          if (d) { setAddDate(d); setAddDateOpen(false) }
+                          if (d) { 
+                            // Set to noon local time to avoid UTC date boundary shift
+                            const adjustedDate = new Date(d);
+                            adjustedDate.setHours(12, 0, 0, 0);
+                            setAddDate(adjustedDate); 
+                            setAddDateOpen(false);
+                          }
                         }}
                         initialFocus
                       />

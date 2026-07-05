@@ -1,5 +1,6 @@
 import Transaction from '../models/Transaction.js';
 import Account from '../models/Account.js';
+import Budget from '../models/Budget.js';
 import mongoose from 'mongoose';
 
 export const getDashboardSummary = async (req, res) => {
@@ -11,19 +12,29 @@ export const getDashboardSummary = async (req, res) => {
     // Get transactions for current month
     let now = new Date();
 
-    // If current calendar month has no transactions, fall back to the month of the most recent transaction
-    const hasTransactionsThisMonth = await Transaction.exists({
+    // If current calendar month has no expenses, fall back to the month of the most recent expense
+    const hasExpensesThisMonth = await Transaction.exists({
       userId: req.user.id,
+      type: 'expense',
       date: {
         $gte: new Date(now.getFullYear(), now.getMonth(), 1),
         $lte: new Date(now.getFullYear(), now.getMonth() + 1, 0)
       }
     });
 
-    if (!hasTransactionsThisMonth) {
-      const mostRecentTx = await Transaction.findOne({ userId: req.user.id }).sort({ date: -1 });
-      if (mostRecentTx) {
-        now = new Date(mostRecentTx.date);
+    if (!hasExpensesThisMonth) {
+      const mostRecentExpense = await Transaction.findOne({
+        userId: req.user.id,
+        type: 'expense'
+      }).sort({ date: -1 });
+
+      if (mostRecentExpense) {
+        now = new Date(mostRecentExpense.date);
+      } else {
+        const mostRecentTx = await Transaction.findOne({ userId: req.user.id }).sort({ date: -1 });
+        if (mostRecentTx) {
+          now = new Date(mostRecentTx.date);
+        }
       }
     }
 
@@ -170,6 +181,95 @@ export const getCashFlowHistory = async (req, res) => {
     }
 
     res.status(200).json({ success: true, history });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getAdvancedAnalytics = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const now = new Date();
+    
+    // 1. Fetch Budget vs Actuals for Current Month
+    const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const budgets = await Budget.find({ userId, month: currentMonthStr });
+    
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    const monthlyExpenses = await Transaction.find({
+      userId,
+      type: 'expense',
+      date: { $gte: startOfMonth, $lt: endOfMonth }
+    });
+    
+    const categorySpending = {};
+    monthlyExpenses.forEach(tx => {
+      const cat = tx.category.toLowerCase();
+      categorySpending[cat] = (categorySpending[cat] || 0) + tx.amount;
+    });
+    
+    const budgetVsActual = budgets.map(b => ({
+      category: b.category,
+      budgeted: b.amount,
+      spent: categorySpending[b.category.toLowerCase()] || 0
+    }));
+
+    // 2. Fetch Historical Net Worth (last 6 months)
+    const accounts = await Account.find({ userId });
+    let currentNetWorth = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+    
+    // Calculate range for last 6 months cash flow
+    const startOfRange = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    const stats = await Transaction.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          date: { $gte: startOfRange }
+        }
+      },
+      {
+        $group: {
+          _id: { year: { $year: '$date' }, month: { $month: '$date' }, type: '$type' },
+          total: { $sum: '$amount' }
+        }
+      }
+    ]);
+
+    const monthsStr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const netWorthTrend = [];
+    
+    // Work backwards from current net worth using monthly net flows
+    let runningNetWorth = currentNetWorth;
+    
+    for (let i = 0; i <= 5; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const mNum = d.getMonth() + 1;
+      const yNum = d.getFullYear();
+      
+      const incomeStat = stats.find(s => s._id.year === yNum && s._id.month === mNum && s._id.type === 'income');
+      const expenseStat = stats.find(s => s._id.year === yNum && s._id.month === mNum && s._id.type === 'expense');
+      
+      const monthlyIncome = incomeStat ? incomeStat.total : 0;
+      const monthlyExpense = expenseStat ? expenseStat.total : 0;
+      const netFlow = monthlyIncome - monthlyExpense;
+      
+      // Store the net worth for this month
+      netWorthTrend.unshift({
+        month: monthsStr[d.getMonth()],
+        netWorth: runningNetWorth
+      });
+      
+      // Subtract this month's net flow to get the previous month's ending net worth
+      runningNetWorth -= netFlow;
+    }
+
+    res.status(200).json({
+      success: true,
+      budgetVsActual,
+      netWorthTrend
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

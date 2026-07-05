@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { ThemeProvider } from './components/common/ThemeProvider'
 
 import Home            from './pages/Home'
 import Login           from './pages/auth/Login'
@@ -12,20 +13,22 @@ import Budgets         from './pages/Budgets'
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/"          element={<Home />} />
-        <Route path="/login"     element={<Login />} />
-        <Route path="/signup"    element={<SignUp />} />
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard"    element={<Dashboard />} />
-          <Route path="/accounts"     element={<Accounts />} />
-          <Route path="/transactions" element={<Transactions />} />
-          <Route path="/budgets"      element={<Budgets />} />
-          <Route path="/settings"     element={<Settings />} />
-        </Route>
-        <Route path="*"          element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider defaultTheme="system" storageKey="pfm-theme">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/"          element={<Home />} />
+          <Route path="/login"     element={<Login />} />
+          <Route path="/signup"    element={<SignUp />} />
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard"    element={<Dashboard />} />
+            <Route path="/accounts"     element={<Accounts />} />
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/budgets"      element={<Budgets />} />
+            <Route path="/settings"     element={<Settings />} />
+          </Route>
+          <Route path="*"          element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }

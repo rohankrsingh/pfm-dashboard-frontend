@@ -8,7 +8,25 @@ export const getBudgets = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Month query param is required' });
     }
 
-    const budgets = await Budget.find({ userId: req.user.id, month });
+    let budgets = await Budget.find({ userId: req.user.id, month });
+
+    // Auto-clone budgets from the most recent active month if none exist for this month
+    if (budgets.length === 0) {
+      const mostRecentBudget = await Budget.findOne({ userId: req.user.id }).sort({ month: -1 });
+      if (mostRecentBudget) {
+        const lastMonth = mostRecentBudget.month;
+        const lastBudgets = await Budget.find({ userId: req.user.id, month: lastMonth });
+        
+        const newBudgets = lastBudgets.map(b => ({
+          userId: req.user.id,
+          category: b.category,
+          amount: b.amount,
+          month: month
+        }));
+        
+        budgets = await Budget.insertMany(newBudgets);
+      }
+    }
 
     // Calculate spent dynamically from transactions
     const startOfMonth = new Date(`${month}-01T00:00:00Z`);

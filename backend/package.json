@@ -18,7 +18,8 @@
     "express-validator": "^7.0.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^7.5.0",
-    "plaid": "^42.2.0"
+    "plaid": "^42.2.0",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

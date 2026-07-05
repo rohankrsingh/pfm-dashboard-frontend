@@ -11,5 +11,9 @@ export const dashboardService = {
 
   getMonthlyStats: async (month) => {
     return client.get(`/dashboard/stats/${month}`);
+  },
+
+  getAdvancedAnalytics: async () => {
+    return client.get('/dashboard/advanced');
   }
 };

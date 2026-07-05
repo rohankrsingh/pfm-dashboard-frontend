@@ -30,12 +30,15 @@ import {
   Cell,
   BarChart,
   Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Dialog,
   DialogContent,
@@ -58,6 +61,7 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from "@/lib/utils"
+import PlaidLinkButton from '@/components/plaid/PlaidLinkButton'
 
 const CATEGORY_COLORS = {
   'groceries': '#ffc091',      // Wise Accent Orange
@@ -102,11 +106,13 @@ export default function Dashboard() {
     expenseByCategory: {}
   })
   const [monthlyHistoryData, setMonthlyHistoryData] = useState([])
+  const [advancedAnalytics, setAdvancedAnalytics] = useState({
+    budgetVsActual: [],
+    netWorthTrend: []
+  })
 
   // Modals state
   const [isTxModalOpen, setIsTxModalOpen] = useState(false)
-  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
-
   // Form values
   const [newTxName, setNewTxName] = useState('')
   const [newTxAmount, setNewTxAmount] = useState('')
@@ -114,8 +120,6 @@ export default function Dashboard() {
   const [newTxCategory, setNewTxCategory] = useState('Groceries')
   const [newTxPaidBy, setNewTxPaidBy] = useState('visa')
   const [newTxAccountId, setNewTxAccountId] = useState('')
-  const [linkBankName, setLinkBankName] = useState('HDFC Bank')
-  const [linkBankBalance, setLinkBankBalance] = useState('5000')
 
   // Mapped accounts for local layout usage
   const mappedAccounts = accounts.map(acc => ({
@@ -141,12 +145,14 @@ export default function Dashboard() {
   const fetchDashboardSummary = async () => {
     try {
       setIsTxLoading(true)
-      const [summaryData, historyData] = await Promise.all([
+      const [summaryData, historyData, advancedData] = await Promise.all([
         api.getDashboardSummary(),
-        api.getCashFlowHistory()
+        api.getCashFlowHistory(),
+        api.getAdvancedAnalytics()
       ])
       setSummary(summaryData.summary)
       setMonthlyHistoryData(historyData.history)
+      setAdvancedAnalytics(advancedData)
 
       const txsData = summaryData.summary.recentTransactions || []
       const mappedTransactions = txsData.map(tx => {
@@ -235,55 +241,19 @@ export default function Dashboard() {
     }
   }
 
-  const handleLinkBank = async (e) => {
-    e.preventDefault()
-    const balanceNum = parseFloat(linkBankBalance)
-    if (!linkBankName || isNaN(balanceNum)) {
-      toast.error('Please fill in all account details.')
-      return
-    }
 
-    try {
-      let type = 'checking'
-      if (linkBankName.includes('Fidelity') || linkBankName.includes('Coinbase')) {
-        type = 'investment'
-      }
-
-      const colors = {
-        'Fidelity Investments': '#10B981',
-        'Bank of America': '#EF4444',
-        'Wells Fargo': '#F59E0B',
-        'Citibank Checking': '#3B82F6',
-        'Coinbase Crypto': '#6366F1',
-        'HDFC Bank': '#004C8F',
-        'ICICI Bank': '#E35E14',
-        'State Bank of India': '#00BFFF',
-        'Axis Bank': '#800020',
-        'Kotak Mahindra Bank': '#EC1C24'
-      }
-      const color = colors[linkBankName] || '#3B82F6'
-
-      await api.createAccount(linkBankName, type, balanceNum, color)
-
-      setIsLinkModalOpen(false)
-      setLinkBankName('HDFC Bank')
-      setLinkBankBalance('5000')
-      toast.success(`${linkBankName} linked successfully.`)
-
-      await fetchLayoutData()
-    } catch (err) {
-      toast.error(err.message || 'Failed to link account')
-    }
-  }
 
   // Custom Chart Tooltips
   const CustomDonutTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-primary text-white p-3 rounded-xl shadow-lg border border-white/10 text-xs">
-          <p className="font-bold">{data.name}</p>
-          <p className="mt-1 font-mono text-primary">₹{data.value.toLocaleString('en-IN', { minimumFractionDigits: 2 })} ({data.percentage.toFixed(1)}%)</p>
+        <div className="bg-card/95 backdrop-blur-md text-foreground p-3 rounded-xl shadow-lg border border-border text-xs z-50">
+          <p className="font-bold flex items-center gap-2">
+            <span className="size-2 rounded-full" style={{ backgroundColor: data.color }} />
+            {data.name}
+          </p>
+          <p className="mt-1 font-mono font-bold">₹{data.value.toLocaleString('en-IN', { minimumFractionDigits: 2 })} <span className="text-muted-foreground font-sans font-normal">({data.percentage.toFixed(1)}%)</span></p>
         </div>
       )
     }
@@ -296,26 +266,79 @@ export default function Dashboard() {
       const exp = payload[1]?.value || 0
       const net = inc - exp
       return (
-        <div className="bg-primary text-white p-3 rounded-xl shadow-lg border border-white/10 text-xs flex flex-col gap-1.5">
-          <p className="font-bold text-muted-foreground border-b border-white/10 pb-1 mb-0.5">{label}</p>
+        <div className="bg-card/95 backdrop-blur-md text-foreground p-3 rounded-xl shadow-lg border border-border text-xs flex flex-col gap-2 z-50 min-w-[140px]">
+          <p className="font-bold text-muted-foreground border-b border-border pb-1.5 mb-0.5">{label}</p>
           <div className="flex items-center justify-between gap-6">
-            <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-primary" />
+            <span className="flex items-center gap-1.5 font-medium">
+              <span className="size-2 rounded-full bg-[#38c8ff]" />
               <span>Income</span>
             </span>
-            <span className="font-mono font-bold text-primary">₹{inc.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+            <span className="font-mono font-bold text-foreground">₹{inc.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="flex items-center justify-between gap-6">
-            <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-destructive" />
+            <span className="flex items-center gap-1.5 font-medium">
+              <span className="size-2 rounded-full bg-[#d03238]" />
               <span>Expenses</span>
             </span>
-            <span className="font-mono font-bold text-destructive">₹{exp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+            <span className="font-mono font-bold text-foreground">₹{exp.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
           </div>
-          <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-1 mt-0.5 font-semibold">
-            <span>Net Flow</span>
-            <span className={`font-mono ${net >= 0 ? 'text-[#9fe870]' : 'text-[#ffc091]'}`}>
+          <div className="flex items-center justify-between gap-6 border-t border-border pt-1.5 mt-0.5 font-semibold">
+            <span className="text-muted-foreground">Net Flow</span>
+            <span className={`font-mono ${net >= 0 ? 'text-[#38c8ff]' : 'text-[#d03238]'}`}>
               {net >= 0 ? '+' : ''}₹{net.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </span>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
+
+  const CustomNetWorthTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const val = payload[0]?.value || 0
+      return (
+        <div className="bg-card/95 backdrop-blur-md text-foreground p-3 rounded-xl shadow-lg border border-border text-xs z-50">
+          <p className="font-bold text-muted-foreground mb-1 border-b border-border pb-1.5">{label}</p>
+          <div className="flex items-center justify-between gap-4">
+            <span className="flex items-center gap-1.5 font-medium">
+              <span className="size-2 rounded-full bg-[#9fe870]" />
+              <span>Net Worth</span>
+            </span>
+            <span className="font-mono font-bold text-foreground">₹{val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
+
+  const CustomBudgetTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const budgeted = payload[0]?.value || 0
+      const spent = payload[1]?.value || 0
+      const remaining = budgeted - spent
+      return (
+        <div className="bg-card/95 backdrop-blur-md text-foreground p-3 rounded-xl shadow-lg border border-border text-xs flex flex-col gap-2 z-50 min-w-[150px]">
+          <p className="font-bold text-muted-foreground border-b border-border pb-1.5 mb-0.5 capitalize">{label}</p>
+          <div className="flex items-center justify-between gap-6">
+            <span className="flex items-center gap-1.5 font-medium">
+              <span className="size-2 rounded-full bg-[#38c8ff]" />
+              <span>Budgeted</span>
+            </span>
+            <span className="font-mono font-bold text-foreground">₹{budgeted.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div className="flex items-center justify-between gap-6">
+            <span className="flex items-center gap-1.5 font-medium">
+              <span className="size-2 rounded-full bg-[#ffc091]" />
+              <span>Spent</span>
+            </span>
+            <span className="font-mono font-bold text-foreground">₹{spent.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div className="flex items-center justify-between gap-6 border-t border-border pt-1.5 mt-0.5 font-semibold">
+            <span className="text-muted-foreground">Remaining</span>
+            <span className={`font-mono ${remaining >= 0 ? 'text-[#9fe870]' : 'text-[#d03238]'}`}>
+              ₹{Math.max(remaining, 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </span>
           </div>
         </div>
@@ -397,15 +420,27 @@ export default function Dashboard() {
               <Plus className="size-4 shrink-0" />
               Add Transaction
             </Button>
-            <Button
-              onClick={() => setIsLinkModalOpen(true)}
-              className="bg-primary text-foreground hover:bg-primary-hover font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
+            <PlaidLinkButton 
+              onLinked={() => {
+                fetchLayoutData()
+                fetchDashboardSummary()
+                toast.success('Plaid sync complete!')
+              }} 
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs flex items-center"
             >
               <LinkIcon className="size-4 shrink-0" />
               Sync Bank Account
-            </Button>
+            </PlaidLinkButton>
           </div>
         </div>
+
+        <Tabs defaultValue="overview" className="w-full flex flex-col gap-6 md:gap-8">
+          <TabsList className="w-fit h-12 bg-muted rounded-[20px] p-1 shadow-inner">
+            <TabsTrigger value="overview" className="rounded-2xl px-6 h-full font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs text-muted-foreground transition-all">Overview</TabsTrigger>
+            <TabsTrigger value="analytics" className="rounded-2xl px-6 h-full font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs text-muted-foreground transition-all">Advanced Analytics</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" className="flex flex-col gap-6 md:gap-8 outline-none m-0">
 
         {/* Top Bento Stats Grid: 4 Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -768,6 +803,129 @@ export default function Dashboard() {
           </Card>
         </div>
 
+        </TabsContent>
+
+        <TabsContent value="analytics" className="flex flex-col gap-6 md:gap-8 outline-none m-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          
+          {/* Net Worth Trend Chart */}
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-base font-bold text-foreground">Net Worth Trend</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Your wealth accumulation over the last 6 months.</p>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-bold">
+                <div className="flex items-center gap-1.5">
+                  <span className="size-3 rounded-full bg-[#9fe870]" />
+                  <span className="text-muted-foreground">Total Assets</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full h-[320px]">
+              <ResponsiveContainer width="100%" height={320}>
+                <AreaChart
+                  data={advancedAnalytics.netWorthTrend}
+                  margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#9fe870" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#9fe870" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(14, 15, 12, 0.06)" />
+                  <XAxis
+                    dataKey="month"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#868685', fontSize: 11, fontWeight: 600 }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={(val) => `₹${val}`}
+                    tick={{ fill: '#868685', fontSize: 10, fontFamily: 'monospace' }}
+                  />
+                  <Tooltip content={<CustomNetWorthTooltip />} cursor={{ stroke: 'rgba(14,15,12,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                  <Area
+                    type="monotone"
+                    dataKey="netWorth"
+                    stroke="#9fe870"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorNetWorth)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          {/* Budget vs Actuals Chart */}
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-base font-bold text-foreground">Budget vs Actual</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Tracking current month spending against your allocations.</p>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-bold">
+                <div className="flex items-center gap-1.5">
+                  <span className="size-3 rounded-full bg-[#38c8ff]" />
+                  <span className="text-muted-foreground">Budgeted</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="size-3 rounded-full bg-[#ffc091]" />
+                  <span className="text-muted-foreground">Spent</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full h-[360px]">
+              {advancedAnalytics.budgetVsActual.length > 0 ? (
+                <ResponsiveContainer width="100%" height={360}>
+                  <BarChart
+                    data={advancedAnalytics.budgetVsActual}
+                    margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                    barGap={4}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(14, 15, 12, 0.06)" />
+                    <XAxis
+                      dataKey="category"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#868685', fontSize: 11, fontWeight: 600, textTransform: 'capitalize' }}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(val) => `₹${val}`}
+                      tick={{ fill: '#868685', fontSize: 10, fontFamily: 'monospace' }}
+                    />
+                    <Tooltip content={<CustomBudgetTooltip />} cursor={{ fill: 'rgba(14, 15, 12, 0.02)' }} />
+                    <Bar
+                      dataKey="budgeted"
+                      fill="#38c8ff"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={40}
+                    />
+                    <Bar
+                      dataKey="spent"
+                      fill="#ffc091"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={40}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground">
+                  <p className="text-sm font-semibold text-foreground">No active budgets this month</p>
+                  <p className="text-xs mt-1">Head to the Budgets page to set up your allocations.</p>
+                </div>
+              )}
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
       </main>
 
       {/* ── Add Transaction Dialog ── */}
@@ -902,86 +1060,6 @@ export default function Dashboard() {
                   className={`font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs ${newTxType === 'income' ? 'bg-success text-white hover:bg-success-deep' : 'bg-primary text-foreground hover:bg-primary-hover'}`}
                 >
                   {newTxType === 'income' ? 'Record Income' : 'Save Expense'}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ── Link Bank Account Dialog ── */}
-      {isLinkModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-card rounded-3xl w-full max-w-lg p-8 shadow-xl border border-border relative animate-in zoom-in-95 duration-150">
-            <button
-              onClick={() => setIsLinkModalOpen(false)}
-              aria-label="Close modal"
-              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors cursor-pointer"
-            >
-              <X className="size-5" />
-            </button>
-
-            <div className="flex items-center gap-2 mb-2 text-primary-foreground">
-              <Sparkles className="size-5 text-foreground" />
-              <h3 className="text-2xl font-black text-foreground">Secure Plaid Sync</h3>
-            </div>
-            <p className="text-sm text-muted-foreground mb-6">Link your checking, savings, or brokerage accounts securely using end-to-end sandbox sync.</p>
-
-            <form onSubmit={handleLinkBank} className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Financial Institution</label>
-                <Select value={linkBankName} onValueChange={setLinkBankName}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Institution" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="HDFC Bank">HDFC Bank</SelectItem>
-                    <SelectItem value="ICICI Bank">ICICI Bank</SelectItem>
-                    <SelectItem value="State Bank of India">State Bank of India</SelectItem>
-                    <SelectItem value="Axis Bank">Axis Bank</SelectItem>
-                    <SelectItem value="Kotak Mahindra Bank">Kotak Mahindra Bank</SelectItem>
-                    <SelectItem value="Fidelity Investments">Fidelity Investments</SelectItem>
-                    <SelectItem value="Bank of America">Bank of America</SelectItem>
-                    <SelectItem value="Wells Fargo">Wells Fargo</SelectItem>
-                    <SelectItem value="Citibank Checking">Citibank Checking</SelectItem>
-                    <SelectItem value="Coinbase Crypto">Coinbase Crypto</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Estimated Balance (₹)</label>
-                <Input
-                  type="number"
-                  placeholder="5000.00"
-                  value={linkBankBalance}
-                  onChange={(e) => setLinkBankBalance(e.target.value)}
-                  className="rounded-2xl h-12 px-4 focus:ring-4 focus:ring-primary/20 text-sm font-medium border-border"
-                  required
-                />
-              </div>
-
-              <div className="bg-muted p-4 rounded-2xl border border-border/50 space-y-1">
-                <span className="text-[11px] font-bold text-muted-foreground uppercase block tracking-wider">Sandbox Mode Notice</span>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  No real bank credentials will be stored. Simply click sync below to instantly import mock records for sandbox testing.
-                </p>
-              </div>
-
-              <div className="pt-4 flex justify-end gap-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setIsLinkModalOpen(false)}
-                  className="rounded-full h-12 px-6 cursor-pointer font-bold transition-all text-sm"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-primary text-foreground hover:bg-primary-hover font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs"
-                >
-                  Sync & Link Account
                 </Button>
               </div>
             </form>

@@ -20,6 +20,18 @@ export const authService = {
   getMe: async () => {
     return client.get('/auth/me');
   },
+  
+  updateProfile: async (data) => {
+    return client.put('/auth/profile', data);
+  },
+
+  updatePassword: async (data) => {
+    return client.put('/auth/password', data);
+  },
+
+  deleteAccount: async () => {
+    return client.delete('/auth/account');
+  },
 
   logout: () => {
     localStorage.removeItem('token');

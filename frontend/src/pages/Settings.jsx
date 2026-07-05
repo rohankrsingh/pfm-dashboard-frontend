@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useNavigate, useOutletContext, Link } from 'react-router-dom'
 import { toast } from 'sonner'
+import { api } from '@/lib/api'
 import {
   User,
   Lock,
   Globe,
   ShieldAlert,
-  Save
+  Save,
+  BuildingIcon
 } from 'lucide-react'
 
 import { Card } from '@/components/ui/card'
@@ -16,7 +18,8 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function Settings() {
-  const { userProfile } = useOutletContext()
+  const navigate = useNavigate()
+  const { userProfile, fetchLayoutData, accounts } = useOutletContext()
   
   // Profile state
   const [name, setName] = useState(userProfile?.name || '')
@@ -28,34 +31,69 @@ export default function Settings() {
   const [confirmPassword, setConfirmPassword] = useState('')
 
   // Preferences
-  const [currency, setCurrency] = useState('INR')
+  const [currency, setCurrency] = useState(userProfile?.currency || 'INR')
+  const [isSaving, setIsSaving] = useState(false)
 
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = async (e) => {
     e.preventDefault()
-    // Mock API call
-    toast.success("Profile updated successfully")
+    try {
+      setIsSaving(true)
+      await api.updateProfile({ name, email })
+      toast.success("Profile updated successfully")
+      fetchLayoutData()
+    } catch (err) {
+      toast.error(err.message || 'Failed to update profile')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
-  const handleUpdatePassword = (e) => {
+  const handleUpdatePassword = async (e) => {
     e.preventDefault()
     if (newPassword !== confirmPassword) {
       toast.error("New passwords do not match")
       return
     }
-    toast.success("Password updated successfully")
-    setCurrentPassword('')
-    setNewPassword('')
-    setConfirmPassword('')
+    try {
+      setIsSaving(true)
+      await api.updatePassword({ currentPassword, newPassword })
+      toast.success("Password updated successfully")
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (err) {
+      toast.error(err.message || 'Failed to update password')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
-  const handleSavePreferences = () => {
-    toast.success("Preferences saved")
+  const handleSavePreferences = async () => {
+    try {
+      setIsSaving(true)
+      await api.updateProfile({ currency })
+      toast.success("Preferences saved successfully")
+      fetchLayoutData()
+    } catch (err) {
+      toast.error(err.message || 'Failed to save preferences')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     const confirm = window.confirm("Are you sure you want to delete your account? This action cannot be undone.")
     if (confirm) {
-      toast.success("Account deletion request submitted")
+      try {
+        setIsSaving(true)
+        await api.deleteAccount()
+        toast.success("Account deleted successfully")
+        api.logout()
+        navigate('/')
+      } catch (err) {
+        toast.error(err.message || 'Failed to delete account')
+        setIsSaving(false)
+      }
     }
   }
 
@@ -102,9 +140,9 @@ export default function Settings() {
                   className="h-12 rounded-xl border-border bg-muted focus:bg-card transition-colors"
                 />
               </div>
-              <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer gap-2 transition-all">
+              <Button type="submit" disabled={isSaving} className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer gap-2 transition-all">
                 <Save className="size-4" />
-                Save Profile
+                {isSaving ? 'Saving...' : 'Save Profile'}
               </Button>
             </form>
           </Card>
@@ -151,8 +189,8 @@ export default function Settings() {
                   className="h-12 rounded-xl border-border bg-muted focus:bg-card transition-colors"
                 />
               </div>
-              <Button type="submit" className="bg-muted text-foreground hover:bg-accent font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
-                Update Password
+              <Button type="submit" disabled={isSaving} className="bg-muted text-foreground hover:bg-accent font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
+                {isSaving ? 'Updating...' : 'Update Password'}
               </Button>
             </form>
           </Card>
@@ -183,8 +221,35 @@ export default function Settings() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleSavePreferences} className="bg-muted text-foreground hover:bg-accent font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
-                Save Preferences
+              <Button onClick={handleSavePreferences} disabled={isSaving} className="bg-muted text-foreground hover:bg-accent font-bold rounded-xl h-12 px-6 mt-2 cursor-pointer transition-all">
+                {isSaving ? 'Saving...' : 'Save Preferences'}
+              </Button>
+            </div>
+          </Card>
+        </section>
+
+        {/* Connected Accounts Section */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="size-8 rounded-full bg-muted flex items-center justify-center">
+              <BuildingIcon className="size-4 text-muted-foreground" />
+            </div>
+            <h2 className="text-lg font-bold text-foreground">Connected Accounts</h2>
+          </div>
+          
+          <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-bold text-foreground">Manage Bank Accounts</h3>
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                  You have {accounts.length} linked account{accounts.length === 1 ? '' : 's'}. Sync real-time transactions securely via Plaid.
+                </p>
+              </div>
+              <Button 
+                asChild
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl h-12 px-6 cursor-pointer whitespace-nowrap"
+              >
+                <Link to="/accounts">Manage Accounts</Link>
               </Button>
             </div>
           </Card>
@@ -209,10 +274,11 @@ export default function Settings() {
               </div>
               <Button 
                 onClick={handleDeleteAccount}
+                disabled={isSaving}
                 variant="destructive" 
                 className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold rounded-xl h-12 px-6 cursor-pointer whitespace-nowrap"
               >
-                Delete Account
+                {isSaving ? 'Deleting...' : 'Delete Account'}
               </Button>
             </div>
           </Card>

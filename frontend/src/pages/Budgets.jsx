@@ -194,26 +194,26 @@ export default function Budgets() {
     <div className="flex-1 max-w-5xl mx-auto w-full p-4 md:p-8 flex flex-col gap-8 pb-20">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-foreground">Budgets</h1>
           <p className="text-sm font-semibold text-muted-foreground mt-1">
             Set limits and track your spending goals
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="flex items-center bg-card rounded-full p-1 border border-border/50 shadow-xs">
-            <Button variant="ghost" size="icon" onClick={handlePrevMonth} className="h-8 w-8 rounded-full hover:bg-muted shrink-0">
+            <Button variant="ghost" size="icon" onClick={handlePrevMonth} className="h-10 w-10 rounded-full hover:bg-muted shrink-0">
               <ChevronLeft className="size-4" />
             </Button>
             <span className="text-sm font-bold w-24 text-center">{format(currentDate, 'MMMM yyyy')}</span>
-            <Button variant="ghost" size="icon" onClick={handleNextMonth} className="h-8 w-8 rounded-full hover:bg-muted shrink-0">
+            <Button variant="ghost" size="icon" onClick={handleNextMonth} className="h-10 w-10 rounded-full hover:bg-muted shrink-0">
               <ChevronRight className="size-4" />
             </Button>
           </div>
           <Button 
             onClick={handleOpenAddModal}
-            className="bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full h-10 px-5 shadow-xs cursor-pointer"
+            className="bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full h-11 px-6 shadow-xs cursor-pointer"
           >
             <Plus className="size-4 mr-2" />
             New Budget
@@ -294,7 +294,7 @@ export default function Budgets() {
             <Button 
               onClick={handleOpenAddModal}
               variant="outline"
-              className="mt-6 rounded-full font-bold border-border cursor-pointer"
+              className="mt-6 rounded-full font-bold border-border cursor-pointer h-11 px-6"
             >
               Create first budget
             </Button>
@@ -323,7 +323,7 @@ export default function Budgets() {
                     </div>
                     
                     <DropdownMenu>
-                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted shrink-0 cursor-pointer" aria-label="Budget actions" />}>
+                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-10 w-10 rounded-full hover:bg-muted shrink-0 cursor-pointer" aria-label="Budget actions" />}>
                         <MoreVertical className="size-4 text-muted-foreground" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-32">
