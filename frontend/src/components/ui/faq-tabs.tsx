@@ -118,7 +118,7 @@ const FAQTabs = ({
         className={cn(
           "relative overflow-hidden whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 border border-border/50",
           selected === key
-            ? "bg-primary text-white"
+            ? "bg-primary text-primary-foreground"
             : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
         )}
       >
@@ -136,7 +136,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
       animate={isOpen ? "open" : "closed"}
       className={cn(
         "rounded-2xl border border-border/50 transition-all duration-300",
-        isOpen ? "bg-primary/20/35 border-primary-neutral/40" : "bg-[#FAFBF9]/40 hover:bg-[#FAFBF9]/80"
+        isOpen ? "bg-primary/10 border-primary/40" : "bg-muted/40 hover:bg-muted/80"
       )}
     >
       <button

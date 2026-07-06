@@ -700,7 +700,7 @@ export default function Transactions() {
                             className={cn(
                               "h-8 w-8 rounded-full text-xs font-bold cursor-pointer",
                               page === item
-                                ? "bg-primary text-white hover:bg-primary/90"
+                                ? "bg-primary text-primary-foreground hover:bg-primary/90"
                                 : "hover:bg-muted text-muted-foreground"
                             )}
                           >

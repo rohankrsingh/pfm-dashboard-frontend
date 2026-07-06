@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom'
 import { api } from '@/lib/api'
+import Logo from '@/components/common/Logo'
 import {
   LayoutDashboard,
   BuildingIcon,
@@ -142,8 +143,8 @@ export default function DashboardLayout() {
           <p className="font-bold mb-1">Error Loading Dashboard</p>
           <p className="text-xs leading-relaxed opacity-90">{error}</p>
         </div>
-        <Button onClick={fetchLayoutData} className="bg-primary text-white font-bold rounded-full px-6 py-2 cursor-pointer">
-          Try Again
+        <Button onClick={fetchLayoutData} className="bg-primary text-primary-foreground font-bold rounded-full px-6 py-2 cursor-pointer">
+          Retry Connection
         </Button>
       </div>
     )
@@ -160,11 +161,7 @@ export default function DashboardLayout() {
                 <SidebarMenu>
                   <SidebarMenuItem className="mb-4">
                     <div className="flex items-center gap-2.5 px-3 py-4">
-                      <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-                        <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
-                        </svg>
-                      </div>
+                      <Logo showText={false} />
                       <div className="flex flex-col">
                         <span className="text-base font-black tracking-tight text-foreground">PFM Sync</span>
                         <span className="text-[10px] font-semibold text-muted-foreground">Internship Project</span>

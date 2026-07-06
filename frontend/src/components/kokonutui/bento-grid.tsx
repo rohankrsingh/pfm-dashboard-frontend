@@ -252,7 +252,7 @@ const TimelineFeature = ({
 const EncryptionFeature = () => {
   return (
     <div className="mt-4 space-y-3">
-      <div className="rounded-2xl border border-border/50 bg-[#FAFBF9]/65 p-4 text-left">
+      <div className="rounded-2xl border border-border/50 bg-muted/40 p-4 text-left">
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider">Password Hashing</span>
           <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Secure</span>
@@ -261,7 +261,7 @@ const EncryptionFeature = () => {
           $2b$12$K8xJ7rM2e9...9zP1qW
         </div>
       </div>
-      <div className="rounded-2xl border border-border/50 bg-[#FAFBF9]/65 p-4 text-left">
+      <div className="rounded-2xl border border-border/50 bg-muted/40 p-4 text-left">
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider">Access Token</span>
           <span className="text-[10px] font-bold text-success bg-primary/20 px-2 py-0.5 rounded-full">JWT Signed</span>
@@ -322,7 +322,7 @@ const MetricsFeature = ({
               {metric.suffix || "%"}
             </div>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#f4f5f3]">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted/50">
             <motion.div
               animate={{
                 width: `${Math.min(100, metric.value)}%`,
@@ -366,7 +366,7 @@ function ManualTransactionQuickAdder() {
     <div className="w-full mt-3 flex flex-col md:flex-row gap-4 text-left">
       <form
         onSubmit={handleAdd}
-        className="flex-1 flex flex-col gap-2 bg-[#F3F4F6] p-3 rounded-2xl border border-border/50"
+        className="flex-1 flex flex-col gap-2 bg-muted/50 p-3 rounded-2xl border border-border/50"
       >
         <input
           type="text"
@@ -399,7 +399,7 @@ function ManualTransactionQuickAdder() {
         </div>
         <button
           type="submit"
-          className="bg-primary text-white text-xs font-bold py-2 rounded-xl hover:bg-primary/90/90 active:scale-[0.97] transition-all cursor-pointer text-center shadow-sm"
+          className="bg-primary text-primary-foreground text-xs font-bold py-2 rounded-xl hover:bg-primary/90/90 active:scale-[0.97] transition-all cursor-pointer text-center shadow-sm"
         >
           + Add Transaction
         </button>
@@ -460,7 +460,7 @@ function BudgetLimitsProgress() {
                   <span className="text-muted-foreground">/ ${b.limit}</span>
                 </span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#f4f5f3]">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted/50">
                 <div
                   className={`h-full rounded-full transition-all duration-1000 ease-out ${b.color}`}
                   style={{ width: `${percent}%` }}
@@ -521,7 +521,7 @@ const BentoCard = ({ item }: { item: BentoItem }) => {
     >
       <Link
         aria-label={`${item.title} - ${item.description}`}
-        className="group relative flex h-full flex-col gap-4 rounded-3xl border border-border/50 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] transition-all duration-500 ease-out before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-b before:from-white/10 before:via-white/20 before:to-transparent before:opacity-100 before:transition-opacity before:duration-500 after:absolute after:inset-0 after:z-[-1] after:rounded-3xl after:bg-card hover:border-border hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] hover:backdrop-blur-[6px]"
+        className="group relative flex h-full flex-col gap-4 rounded-3xl border border-border/50 bg-gradient-to-b from-muted/30 to-muted/10 p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] transition-all duration-500 ease-out before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-b before:from-muted/10 before:via-muted/20 before:to-transparent before:opacity-100 before:transition-opacity before:duration-500 after:absolute after:inset-0 after:z-[-1] after:rounded-3xl after:bg-card hover:border-border hover:bg-gradient-to-b hover:from-muted/50 hover:to-muted/20 hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] hover:backdrop-blur-[6px]"
         href={item.href || "#"}
         tabIndex={0}
       >
@@ -581,8 +581,12 @@ const BentoCard = ({ item }: { item: BentoItem }) => {
 
 export default function BentoGrid() {
   return (
-    <section className="relative overflow-hidden bg-card py-20 border-t border-b border-border/50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-background py-24 border-y border-border/50">
+      {/* Background decorations */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+      <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[400px] w-[400px] rounded-full bg-primary/20 opacity-30 blur-[100px]" />
+      
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="max-w-3xl mx-auto mb-16 text-center">
           <div className="inline-flex items-center gap-1.5 bg-primary/20 border border-primary-neutral/30 rounded-full px-3.5 py-1 mb-4">
@@ -633,7 +637,7 @@ export default function BentoGrid() {
           {/* Row 3: Manual Ledger Control (spans 2) & Custom Category Budgets (spans 1) */}
           <div className="grid gap-6 md:grid-cols-3">
             <motion.div
-              className="overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] hover:border-border hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] md:col-span-2 text-left"
+              className="overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-b from-muted/30 to-muted/10 p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] hover:border-border hover:bg-gradient-to-b hover:from-muted/50 hover:to-muted/20 hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] md:col-span-2 text-left"
               variants={fadeInUp}
             >
               <div className="flex flex-col h-full justify-between gap-2">
@@ -652,7 +656,7 @@ export default function BentoGrid() {
             </motion.div>
 
             <motion.div
-              className="overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-b from-white to-[#F9FAF8] p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] hover:border-border hover:bg-gradient-to-b hover:from-white hover:to-[#F3F4F1] hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] md:col-span-1 text-left"
+              className="overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-b from-muted/30 to-muted/10 p-6 shadow-[0_4px_20px_rgba(14,15,12,0.02)] backdrop-blur-[4px] hover:border-border hover:bg-gradient-to-b hover:from-muted/50 hover:to-muted/20 hover:shadow-[0_8px_30px_rgba(14,15,12,0.05)] md:col-span-1 text-left"
               variants={fadeInUp}
             >
               <div className="flex flex-col h-full justify-between gap-2">

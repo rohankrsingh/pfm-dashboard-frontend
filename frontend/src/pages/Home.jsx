@@ -18,6 +18,7 @@ import {
 } from '@phosphor-icons/react'
 import BentoGrid from '../components/kokonutui/bento-grid'
 import { FAQ } from '../components/ui/faq-tabs'
+import Logo from '../components/common/Logo'
 
 const pfmFaqs = [
   {
@@ -59,16 +60,9 @@ export default function Home() {
 
       {/* ── Navigation Bar ── */}
       <header className="h-[72px] border-b border-border/50 px-6 flex items-center justify-between z-40 bg-card/80 backdrop-blur-md sticky top-0">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-            <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
-            </svg>
-          </div>
-          <span className="text-xl font-black tracking-tight text-foreground select-none">PFM</span>
-        </div>
+        <Logo />
 
-        <nav className="hidden md:flex items-center gap-1 bg-[#f4f5f3] p-1 rounded-full border border-border/50">
+        <nav className="hidden md:flex items-center gap-1 bg-muted/80 p-1 rounded-full border border-border/50">
           <Link to="#features" className="text-xs font-semibold text-muted-foreground px-4 py-2 rounded-full hover:bg-card hover:text-foreground hover:shadow-sm transition-all duration-200">
             Overview
           </Link>
@@ -83,13 +77,13 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <Link
             to="/login"
-            className="text-sm font-semibold text-foreground px-4 py-2 rounded-full hover:bg-[#f4f5f3] transition-colors"
+            className="text-sm font-semibold text-foreground px-4 py-2 rounded-full hover:bg-muted transition-colors"
           >
             Sign in
           </Link>
           <Link
             to="/signup"
-            className="bg-primary text-white text-xs font-semibold px-5 py-2.5 rounded-full hover:bg-primary/90/90 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="bg-primary text-primary-foreground text-xs font-semibold px-5 py-2.5 rounded-full hover:bg-primary/90/90 hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             Start free trial
           </Link>
@@ -97,7 +91,7 @@ export default function Home() {
       </header>
 
       {/* ── Hero & Top-of-Page Section ── */}
-      <section className="relative pt-16 pb-20 px-6 text-center overflow-hidden bg-gradient-to-b from-[#FAFBF9] to-white border-b border-border/50">
+      <section className="relative pt-16 pb-20 px-6 text-center overflow-hidden bg-gradient-to-b from-muted/30 to-background border-b border-border/50">
         <div className="max-w-3xl mx-auto relative z-10">
 
           {/* Headline */}
@@ -107,11 +101,11 @@ export default function Home() {
 
           {/* Subtext */}
           <p className="text-base text-muted-foreground max-w-lg mx-auto mb-10 leading-relaxed">
-            A personal finance manager dashboard built as our internship project to track spending, set budgets, and visualize clear cash flow insights.
+            A premium personal finance dashboard built to track real-time transactions, set budgets, and visualize clear cash flow insights.
           </p>
 
           {/* Email Inline Form */}
-          <form onSubmit={handleSubscribe} className="max-w-md mx-auto mb-12 flex items-center bg-[#F3F4F6] border border-border rounded-full p-1.5 focus-within:ring-2 focus-within:ring-wise-ink/10 focus-within:border-border transition-all">
+          <form onSubmit={handleSubscribe} className="max-w-md mx-auto mb-12 flex items-center bg-muted/50 border border-border rounded-full p-1.5 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50 transition-all">
             <div className="flex items-center gap-2 pl-3 flex-1">
               <EnvelopeSimple size={18} className="text-muted-foreground" />
               <input
@@ -125,9 +119,9 @@ export default function Home() {
             </div>
             <button
               type="submit"
-              className="bg-primary text-white text-xs font-semibold px-6 py-3 rounded-full hover:bg-primary/90/90 active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="bg-primary text-primary-foreground text-xs font-semibold px-6 py-3 rounded-full hover:bg-primary/90/90 active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
-              {submitted ? 'Verified!' : 'Launch prototype'}
+              {submitted ? 'Verified!' : 'Go to Dashboard'}
               <ArrowRight size={14} />
             </button>
           </form>
@@ -138,23 +132,17 @@ export default function Home() {
 
             <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#1f1f1f] rounded-full" />
 
-            <div className="bg-[#f4f5f3] rounded-xl overflow-hidden text-left border border-border/50 flex flex-col">
+            <div className="bg-muted rounded-xl overflow-hidden text-left border border-border flex flex-col">
 
               {/* Mock Nav */}
               <div className="bg-card border-b border-border/50 px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
-                    </svg>
-                  </div>
-                  <span className="text-xs font-bold text-foreground">PFM</span>
-                </div>
+                <Logo iconContainerClassName="w-6 h-6 rounded-md" innerSvgClassName="w-3.5 h-3.5" textClassName="text-xs" />
 
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-semibold text-muted-foreground px-2.5 py-1 rounded-full">Dashboard</span>
-                  <span className="text-[10px] font-semibold text-foreground bg-primary/20 px-2.5 py-1 rounded-full">Accounts</span>
-                  <span className="text-[10px] font-semibold text-muted-foreground px-2.5 py-1 rounded-full">Payments</span>
+                  <span className="text-[10px] font-semibold text-foreground bg-primary/20 px-2.5 py-1 rounded-full">Dashboard</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground px-2.5 py-1 rounded-full">Transactions</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground px-2.5 py-1 rounded-full">Accounts</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground px-2.5 py-1 rounded-full">Analytics</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -173,8 +161,8 @@ export default function Home() {
                     <h3 className="text-sm font-bold text-foreground">Good morning, William!</h3>
                     <p className="text-[10px] text-muted-foreground">Here is your financial status today.</p>
                   </div>
-                  <button className="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
-                    <Plus size={10} /> New payment
+                  <button className="bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
+                    <Plus size={10} /> Add Transaction
                   </button>
                 </div>
 
@@ -185,7 +173,7 @@ export default function Home() {
                   <div className="bg-card border border-border/50 rounded-2xl p-4 flex flex-col justify-between h-[180px] shadow-[0_8px_16px_rgba(0,0,0,0.02)]">
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className="text-[10px] font-semibold text-muted-foreground block uppercase">My Accounts</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground block uppercase">Net Worth</span>
                         <span className="text-lg font-black text-foreground tracking-tight mt-0.5 block">$16,531.54</span>
                       </div>
                       <span className="text-[9px] font-bold text-success bg-primary/20 px-2 py-0.5 rounded-full flex items-center gap-0.5">
@@ -211,7 +199,7 @@ export default function Home() {
                   <div className="bg-card border border-border/50 rounded-2xl p-4 flex flex-col justify-between h-[180px] shadow-[0_8px_16px_rgba(0,0,0,0.02)]">
                     <div>
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-semibold text-muted-foreground block uppercase">Spending Plan</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground block uppercase">Monthly Budget</span>
                         <span className="text-[9px] font-bold text-muted-foreground">View details</span>
                       </div>
                       <div className="flex items-baseline gap-1 mt-1">
@@ -225,7 +213,7 @@ export default function Home() {
                       <div className="w-5 bg-primary/5 rounded-t-md h-8" />
                       <div className="w-5 bg-primary/5 rounded-t-md h-12" />
                       <div className="w-5 bg-primary rounded-t-md h-16 relative">
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-[8px] px-1 rounded font-bold shadow">+12%</div>
+                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[8px] px-1 rounded font-bold shadow">+12%</div>
                       </div>
                       <div className="w-5 bg-primary/5 rounded-t-md h-10" />
                       <div className="w-5 bg-primary/5 rounded-t-md h-14" />
@@ -270,20 +258,9 @@ export default function Home() {
       </section>
 
       {/* ── Features Bento Grid Section ── */}
-      <section id="features" className="py-24 px-6 bg-[#FAFBF9] border-b border-border/50 flex flex-col items-center">
-        <div className="max-w-3xl mx-auto mb-16 text-center">
-          <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mb-4">
-            Designed for visual clarity
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            A comprehensive financial workspace mapping out your balances, predictions, and budget structures in real-time.
-          </p>
-        </div>
-
-        <div className="w-full max-w-7xl mx-auto">
-          <BentoGrid />
-        </div>
-      </section>
+      <div id="features">
+        <BentoGrid />
+      </div>
 
       {/* ── Closing Call-to-Action Section ── */}
       <section className="relative py-28 px-6 text-center bg-card overflow-hidden border-b border-border/50">
@@ -296,7 +273,7 @@ export default function Home() {
               <span className="text-xl font-black text-foreground">$1.2k</span>
               <span className="text-[9px] font-bold text-success bg-primary/20 px-2 py-0.5 rounded-full">+12%</span>
             </div>
-            <div className="w-full bg-[#f4f5f3] rounded-full h-1.5 mt-3 overflow-hidden">
+            <div className="w-full bg-muted rounded-full h-1.5 mt-3 overflow-hidden">
               <div className="bg-primary h-full rounded-full w-[70%]" />
             </div>
           </div>
@@ -320,22 +297,20 @@ export default function Home() {
 
         <div className="max-w-xl mx-auto relative z-10">
           {/* Center Logo */}
-          <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-6 shadow-md">
-            <svg className="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
-            </svg>
+          <div className="flex justify-center mb-6">
+            <Logo showText={false} iconContainerClassName="w-12 h-12 rounded-2xl shadow-md" innerSvgClassName="w-7 h-7" />
           </div>
 
           <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mb-4">
             Simple. Seamless. Personal.
           </h2>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-8">
-            An internship project designed to explore advanced financial tracking UI paradigms.
+            A modern web application designed to explore advanced financial tracking UI paradigms.
           </p>
 
           <Link
             to="/signup"
-            className="bg-primary text-white font-semibold text-sm px-8 py-3.5 rounded-full hover:bg-primary/90/90 hover:scale-[1.02] active:scale-[0.98] transition-all inline-block shadow-sm"
+            className="bg-primary text-primary-foreground font-semibold text-sm px-8 py-3.5 rounded-full hover:bg-primary/90/90 hover:scale-[1.02] active:scale-[0.98] transition-all inline-block shadow-sm"
           >
             Explore PFM dashboard
           </Link>
@@ -351,7 +326,7 @@ export default function Home() {
       />
 
       {/* ── Footer ── */}
-      <footer id="team" className="bg-[#FAFBF9] px-6 py-12 border-t border-border/50">
+      <footer id="team" className="bg-muted/10 px-6 py-12 border-t border-border/50">
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-6">
 
           {/* Nav list */}
