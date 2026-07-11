@@ -9,41 +9,14 @@ export const getDashboardSummary = async (req, res) => {
     const accounts = await Account.find({ userId: req.user.id });
     const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
 
-    // Get transactions for current month
-    let now = new Date();
-
-    // If current calendar month has no expenses, fall back to the month of the most recent expense
-    const hasExpensesThisMonth = await Transaction.exists({
-      userId: req.user.id,
-      type: 'expense',
-      date: {
-        $gte: new Date(now.getFullYear(), now.getMonth(), 1),
-        $lte: new Date(now.getFullYear(), now.getMonth() + 1, 0)
-      }
-    });
-
-    if (!hasExpensesThisMonth) {
-      const mostRecentExpense = await Transaction.findOne({
-        userId: req.user.id,
-        type: 'expense'
-      }).sort({ date: -1 });
-
-      if (mostRecentExpense) {
-        now = new Date(mostRecentExpense.date);
-      } else {
-        const mostRecentTx = await Transaction.findOne({ userId: req.user.id }).sort({ date: -1 });
-        if (mostRecentTx) {
-          now = new Date(mostRecentTx.date);
-        }
-      }
-    }
-
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    // Get transactions for the last 30 days
+    const now = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(now.getDate() - 30);
 
     const monthlyTransactions = await Transaction.find({
       userId: req.user.id,
-      date: { $gte: firstDay, $lte: lastDay }
+      date: { $gte: thirtyDaysAgo, $lte: now }
     });
 
     // Calculate income and expenses for the month

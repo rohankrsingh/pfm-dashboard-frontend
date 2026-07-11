@@ -412,10 +412,10 @@ export default function Dashboard() {
               Here's an overview of your money sandbox as of today.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
             <Button
               onClick={() => setIsTxModalOpen(true)}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs"
             >
               <Plus className="size-4 shrink-0" />
               Add Transaction
@@ -426,7 +426,7 @@ export default function Dashboard() {
                 fetchDashboardSummary()
                 toast.success('Plaid sync complete!')
               }} 
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs flex items-center"
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-[24px] h-12 px-6 cursor-pointer gap-2 transition-all shadow-xs flex items-center justify-center"
             >
               <LinkIcon className="size-4 shrink-0" />
               Sync Bank Account
@@ -480,7 +480,7 @@ export default function Dashboard() {
               {/* Card 2: Monthly Spending */}
               <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col justify-between h-36">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Monthly Spending</span>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">30-Day Spending</span>
                   <div className="size-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
                     <ArrowDownRight className="size-4 text-destructive" />
                   </div>
@@ -498,7 +498,7 @@ export default function Dashboard() {
               {/* Card 3: Monthly Income */}
               <Card className="rounded-[24px] border-none bg-card p-6 shadow-xs flex flex-col justify-between h-36">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Monthly Income</span>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">30-Day Income</span>
                   <div className="size-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
                     <TrendingUp className="size-4 text-success" />
                   </div>
@@ -548,7 +548,7 @@ export default function Dashboard() {
                   <p className="text-xs text-muted-foreground mt-0.5">Distribution of spending across merchant categories.</p>
                 </div>
                 <span className="text-[10px] bg-muted text-muted-foreground font-bold uppercase px-2.5 py-0.5 rounded-full">
-                  This Month
+                  Last 30 Days
                 </span>
               </div>
 
@@ -990,7 +990,9 @@ export default function Dashboard() {
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Account</label>
                 <Select value={newTxAccountId} onValueChange={setNewTxAccountId}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Account" />
+                    <SelectValue placeholder="Select Account">
+                      {newTxAccountId ? mappedAccounts.find(a => a.id === newTxAccountId)?.platform : null}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {mappedAccounts.map(acc => (
@@ -1057,7 +1059,7 @@ export default function Dashboard() {
                 </Button>
                 <Button
                   type="submit"
-                  className={`font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs ${newTxType === 'income' ? 'bg-success text-white hover:bg-success-deep' : 'bg-primary text-foreground hover:bg-primary-hover'}`}
+                  className={`font-bold rounded-full h-12 px-7 cursor-pointer transition-all text-sm shadow-xs ${newTxType === 'income' ? 'bg-success text-primary-foreground hover:bg-success-deep' : 'bg-primary text-primary-foreground hover:bg-primary-hover'}`}
                 >
                   {newTxType === 'income' ? 'Record Income' : 'Save Expense'}
                 </Button>

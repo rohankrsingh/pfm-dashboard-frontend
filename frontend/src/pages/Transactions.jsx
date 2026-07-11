@@ -364,7 +364,9 @@ export default function Transactions() {
               <CollapsibleContent className="md:!block md:flex md:items-center gap-3 space-y-3 md:space-y-0 mt-3 md:mt-0">
                 <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger className="w-full md:w-36 h-10 rounded-full border-border text-sm">
-                <SelectValue />
+                <SelectValue>
+                  {TYPE_OPTIONS.find(o => o.value === filterType)?.label}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {TYPE_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
@@ -373,7 +375,9 @@ export default function Transactions() {
 
             <Select value={filterCat} onValueChange={setFilterCat}>
               <SelectTrigger className="w-full md:w-40 h-10 rounded-full border-border text-sm">
-                <SelectValue placeholder="All Categories" />
+                <SelectValue placeholder="All Categories">
+                  {filterCat === 'all' ? 'All Categories' : CATEGORIES.find(c => c.value === filterCat)?.label}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
@@ -383,7 +387,9 @@ export default function Transactions() {
 
             <Select value={filterAcc} onValueChange={setFilterAcc}>
               <SelectTrigger className="w-full md:w-44 h-10 rounded-full border-border text-sm">
-                <SelectValue placeholder="All Accounts" />
+                <SelectValue placeholder="All Accounts">
+                  {filterAcc === 'all' ? 'All Accounts' : accounts.find(a => a._id === filterAcc)?.name}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Accounts</SelectItem>
@@ -393,7 +399,9 @@ export default function Transactions() {
 
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-full md:w-40 h-10 rounded-full border-border text-sm">
-                <SelectValue />
+                <SelectValue>
+                  {SORT_OPTIONS.find(o => o.value === sortBy)?.label}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {SORT_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
@@ -529,7 +537,7 @@ export default function Transactions() {
               {allTransactions.length === 0 && (
                 <Button
                   onClick={() => setIsAddOpen(true)}
-                  className="mt-2 bg-primary text-foreground font-bold h-10 px-5 rounded-full text-xs cursor-pointer hover:bg-primary-hover"
+                  className="mt-2 bg-primary text-primary-foreground font-bold h-10 px-5 rounded-full text-xs cursor-pointer hover:bg-primary-hover"
                 >
                   <Plus className="size-3.5 mr-1.5" /> Add first transaction
                 </Button>
@@ -643,6 +651,7 @@ export default function Transactions() {
                               <DropdownMenuItem
                                 className="text-xs font-semibold cursor-pointer"
                                 onSelect={() => startEdit(tx)}
+                                onClick={() => startEdit(tx)}
                               >
                                 <Edit2 className="size-3.5 mr-1.5" />
                                 Edit
@@ -651,7 +660,7 @@ export default function Transactions() {
                               <DropdownMenuItem
                                 variant="destructive"
                                 className="text-xs font-semibold cursor-pointer"
-                                onSelect={() => setDeleteTarget(tx)}
+                                onClick={() => setDeleteTarget(tx)}
                               >
                                 <Trash2 className="size-3.5 mr-1.5" />
                                 Delete
@@ -778,7 +787,9 @@ export default function Transactions() {
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Type</label>
                   <Select value={addType} onValueChange={setAddType}>
                     <SelectTrigger className="w-full h-12 rounded-2xl border-border">
-                      <SelectValue />
+                      <SelectValue>
+                        {addType === 'expense' ? 'Expense' : 'Income'}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="expense">Expense</SelectItem>
@@ -793,7 +804,9 @@ export default function Transactions() {
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Category</label>
                   <Select value={addCat} onValueChange={setAddCat}>
                     <SelectTrigger className="w-full h-12 rounded-2xl border-border">
-                      <SelectValue />
+                      <SelectValue>
+                        {CATEGORIES.find(c => c.value === addCat)?.label}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {CATEGORIES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
@@ -804,7 +817,9 @@ export default function Transactions() {
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Account</label>
                   <Select value={addAccId} onValueChange={setAddAccId}>
                     <SelectTrigger className="w-full h-12 rounded-2xl border-border">
-                      <SelectValue placeholder="Select account" />
+                      <SelectValue placeholder="Select account">
+                        {addAccId ? accounts.find(a => a._id === addAccId)?.name : null}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {accounts.map(a => <SelectItem key={a._id} value={a._id}>{a.name}</SelectItem>)}
@@ -901,7 +916,7 @@ export default function Transactions() {
                 Cancel
               </Button>
               <Button onClick={handleDelete} disabled={isDeleting}
-                className="flex-1 bg-destructive text-white hover:bg-red-700 font-bold rounded-full h-11 text-xs cursor-pointer">
+                className="flex-1 bg-destructive text-destructive-foreground hover:bg-red-700 font-bold rounded-full h-11 text-xs cursor-pointer">
                 {isDeleting ? 'Deleting…' : 'Delete'}
               </Button>
             </div>

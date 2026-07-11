@@ -216,18 +216,18 @@ export default function Accounts() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
             <Button 
               onClick={handleSyncAll}
               disabled={isSyncing}
               variant="outline"
-              className="flex-1 md:flex-initial border-border text-foreground font-bold rounded-full h-12 px-6 cursor-pointer gap-2 transition-all hover:bg-muted select-none"
+              className="w-full sm:w-auto border-border text-foreground font-bold rounded-full h-12 px-6 cursor-pointer gap-2 transition-all hover:bg-muted select-none"
             >
               <RefreshCw className={cn("size-4 shrink-0", isSyncing && "animate-spin")} />
               {isSyncing ? 'Syncing...' : 'Sync All'}
             </Button>
             
-            <PlaidLinkButton onLinked={fetchLayoutData} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-12 px-5 shadow-xs cursor-pointer gap-2" />
+            <PlaidLinkButton onLinked={fetchLayoutData} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-12 px-5 shadow-xs cursor-pointer gap-2 flex items-center justify-center" />
           </div>
         </div>
 
@@ -641,7 +641,7 @@ export default function Accounts() {
               </Button>
               <Button 
                 onClick={handleDeleteConfirm}
-                className="flex-1 bg-destructive text-white hover:bg-destructive/90 font-bold rounded-full h-11 text-xs cursor-pointer"
+                className="flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold rounded-full h-11 text-xs cursor-pointer"
               >
                 Disconnect Sync
               </Button>

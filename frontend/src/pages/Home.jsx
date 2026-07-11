@@ -56,7 +56,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-card flex flex-col font-sans selection:bg-primary selection:text-foreground">
+    <div className="min-h-[100dvh] bg-card flex flex-col font-sans selection:bg-primary selection:text-primary-foreground">
 
       {/* ── Navigation Bar ── */}
       <header className="h-[72px] border-b border-border/50 px-6 flex items-center justify-between z-40 bg-card/80 backdrop-blur-md sticky top-0">

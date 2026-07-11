@@ -182,7 +182,7 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/dashboard"
-                          ? "bg-primary text-foreground shadow-sm"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -196,7 +196,7 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/accounts"
-                          ? "bg-primary text-foreground shadow-sm"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -210,7 +210,7 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/transactions"
-                          ? "bg-primary text-foreground shadow-sm"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -224,7 +224,7 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/budgets"
-                          ? "bg-primary text-foreground shadow-sm"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -238,7 +238,7 @@ export default function DashboardLayout() {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all",
                         location.pathname === "/settings"
-                          ? "bg-primary text-foreground shadow-sm"
+                          ? "bg-primary text-primary-foreground shadow-sm"
                           : "hover:bg-muted text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -329,7 +329,7 @@ export default function DashboardLayout() {
                   
                   <DropdownMenuGroup>
                     <DropdownMenuItem
-                      onSelect={() => navigate('/accounts')}
+                      onClick={() => navigate('/accounts')}
                       className="cursor-pointer"
                     >
                       <span className="flex items-center gap-2">
@@ -347,14 +347,14 @@ export default function DashboardLayout() {
                   
                   <DropdownMenuGroup>
                     <DropdownMenuItem
-                      onSelect={() => navigate('/settings')}
+                      onClick={() => navigate('/settings')}
                       className="cursor-pointer"
                     >
                       <SettingsIcon className="size-4" aria-hidden="true" />
                       Settings
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onSelect={() => toast.success("Help center coming soon")}
+                      onClick={() => toast.success("Help center coming soon")}
                       className="cursor-pointer"
                     >
                       <LifeBuoyIcon className="size-4" aria-hidden="true" />

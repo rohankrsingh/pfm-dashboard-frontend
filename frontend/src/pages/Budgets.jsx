@@ -213,7 +213,7 @@ export default function Budgets() {
           </div>
           <Button 
             onClick={handleOpenAddModal}
-            className="bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full h-11 px-6 shadow-xs cursor-pointer"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-11 px-6 shadow-xs cursor-pointer"
           >
             <Plus className="size-4 mr-2" />
             New Budget
@@ -417,7 +417,7 @@ export default function Budgets() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full px-6 cursor-pointer shadow-xs"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full px-6 cursor-pointer shadow-xs"
               >
                 {isSubmitting ? 'Saving...' : 'Save Budget'}
               </Button>

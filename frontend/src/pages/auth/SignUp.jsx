@@ -55,14 +55,14 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col md:flex-row font-sans selection:bg-primary selection:text-foreground">
+    <div className="min-h-[100dvh] bg-background flex flex-col md:flex-row font-sans selection:bg-primary selection:text-primary-foreground">
       
       {/* Left side: Auth form */}
       <div className="w-full md:w-[45%] min-h-[100dvh] md:min-h-0 flex flex-col justify-between p-6 md:p-12 lg:p-16 bg-background">
         {/* Top bar with Logo */}
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="h-9 w-9 bg-primary rounded-xl flex items-center justify-center font-black text-foreground ring-1 ring-wise-ink/5 transition-transform group-hover:scale-105 active:scale-95">
+            <div className="h-9 w-9 bg-primary rounded-xl flex items-center justify-center font-black text-primary-foreground ring-1 ring-wise-ink/5 transition-transform group-hover:scale-105 active:scale-95">
               P
             </div>
             <span className="text-xl font-black tracking-tight text-foreground">PFM</span>
@@ -121,7 +121,7 @@ export default function SignUp() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary-hover text-foreground font-semibold text-sm py-6 rounded-xl transition-all active:scale-[0.98] active:translate-y-px shadow-sm flex items-center justify-center gap-2 mt-4"
+              className="w-full bg-primary hover:bg-primary-hover text-primary-foreground font-semibold text-sm py-6 rounded-xl transition-all active:scale-[0.98] active:translate-y-px shadow-sm flex items-center justify-center gap-2 mt-4"
             >
               {isLoading ? (
                 <span className="h-4 w-4 border-2 border-border border-t-transparent rounded-full animate-spin" />
